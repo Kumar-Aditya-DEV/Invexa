@@ -59,7 +59,7 @@ const MainLayout: React.FC = () => {
   // If on Auth view standalone
   if (activeView === 'auth' || activeView === 'login') {
     return (
-      <div className="min-h-screen bg-slate-100 flex flex-col justify-center py-6 px-4">
+      <div className="h-screen w-full bg-white overflow-hidden flex flex-col">
         <AuthView />
         <ToastContainer />
       </div>
