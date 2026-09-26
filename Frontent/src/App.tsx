@@ -19,6 +19,8 @@ import { CategoriesRulesView } from './components/views/CategoriesRulesView';
 import { ProfileView } from './components/views/ProfileView';
 import { AuthView } from './components/views/AuthView';
 import { LandingView } from './components/views/LandingView';
+import { InboxView } from './components/views/InboxView';
+
 
 const MainLayout: React.FC = () => {
   const { activeView } = useStockSense();
@@ -31,6 +33,8 @@ const MainLayout: React.FC = () => {
         return <LandingView />;
       case 'dashboard':
         return <DashboardView />;
+      case 'inbox':
+        return <InboxView />;
       case 'products':
         return <ProductsView />;
       case 'stock':
