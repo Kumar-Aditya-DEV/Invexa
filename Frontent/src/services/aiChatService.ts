@@ -122,7 +122,7 @@ function generateContextualResponse(
       return {
         id: `ai-${Date.now()}`,
         sender: 'assistant',
-        text: `✅ **Great news!** All **${products.length} inventory items** are currently operating above their configured minimum reorder thresholds across all facilities.`,
+        text: `**Stock Levels Normal:** All **${products.length} inventory items** are currently operating above their configured minimum reorder thresholds across all facilities.`,
         timestamp: now,
         actionButtons: [
           { label: 'View All Products', view: 'products' },
@@ -134,7 +134,7 @@ function generateContextualResponse(
     return {
       id: `ai-${Date.now()}`,
       sender: 'assistant',
-      text: `⚠️ Found **${lowStockItems.length} items** requiring replenishment attention based on current reorder levels and active reservation allocations:`,
+      text: `Found **${lowStockItems.length} items** requiring replenishment attention based on current reorder levels and active reservation allocations:`,
       timestamp: now,
       dataCard: {
         type: 'products',
@@ -168,13 +168,13 @@ function generateContextualResponse(
     return {
       id: `ai-${Date.now()}`,
       sender: 'assistant',
-      text: `📦 **${matchingProduct.name}** (\`${matchingProduct.sku}\`):\n\n` +
+      text: `**${matchingProduct.name}** (\`${matchingProduct.sku}\`):\n\n` +
         `• **On-Hand Total:** ${matchingProduct.stock} ${matchingProduct.unit}\n` +
         `• **Reserved for Orders:** ${matchingProduct.reserved || 0} ${matchingProduct.unit}\n` +
         `• **Free to Use (Available):** **${matchingProduct.available} ${matchingProduct.unit}**\n` +
         `• **Assigned Facility:** ${matchingProduct.warehouseName} → \`${matchingProduct.locationName}\`\n` +
         `• **Category:** ${matchingProduct.category}\n` +
-        `• **Stock Status:** ${matchingProduct.status} ${isLow ? '(⚠️ Under Reorder Threshold)' : '(✅ Healthy)'}\n` +
+        `• **Stock Status:** ${matchingProduct.status} ${isLow ? '(Under Reorder Threshold)' : '(Healthy)'}\n` +
         `• **Unit Price:** $${matchingProduct.unitPrice.toFixed(2)} | **Total Valuation:** $${(matchingProduct.stock * matchingProduct.unitPrice).toLocaleString()}`,
       timestamp: now,
       actionButtons: [
@@ -202,7 +202,7 @@ function generateContextualResponse(
     return {
       id: `ai-${Date.now()}`,
       sender: 'assistant',
-      text: `🚚 **Outbound Deliveries Status:**\n\n` +
+      text: `**Outbound Deliveries Status:**\n\n` +
         `• **Total Orders:** ${deliveries.length}\n` +
         `• **Ready for Dispatch:** **${readyDeliveries.length}** order(s)\n` +
         `• **Waiting (Stock Shortage):** **${waitingDeliveries.length}** order(s)\n` +
@@ -243,7 +243,7 @@ function generateContextualResponse(
     return {
       id: `ai-${Date.now()}`,
       sender: 'assistant',
-      text: `📥 **Inbound Receipts Overview:**\n\n` +
+      text: `**Inbound Receipts Overview:**\n\n` +
         `• **Total Receipts:** ${receipts.length}\n` +
         `• **Awaiting Inspection at Dock:** **${readyDock.length}** receipt(s)\n` +
         `• **Draft / In-Transit:** ${receipts.filter(r => r.status === 'Draft' || r.status === 'Waiting').length} receipt(s)\n` +
@@ -280,7 +280,7 @@ function generateContextualResponse(
     return {
       id: `ai-${Date.now()}`,
       sender: 'assistant',
-      text: `🏭 **INVEXA Warehouse Infrastructure:**\n\n` +
+      text: `**INVEXA Warehouse Infrastructure:**\n\n` +
         `You currently manage **${warehouses.length} active facilities** with **${ctx.locations.length} designated storage racks & bins**:`,
       timestamp: now,
       dataCard: {
@@ -319,7 +319,7 @@ function generateContextualResponse(
     return {
       id: `ai-${Date.now()}`,
       sender: 'assistant',
-      text: `📊 **Live Inventory Executive Summary:**\n\n` +
+      text: `**Live Inventory Executive Summary:**\n\n` +
         `• **Total Portfolio Valuation:** **$${kpis.totalValuation.toLocaleString(undefined, { minimumFractionDigits: 2 })}**\n` +
         `• **Total Products Registered:** **${kpis.totalProducts} unique SKUs**\n` +
         `• **On-Hand Stock Volume:** **${kpis.totalStock.toLocaleString()} units**\n` +
@@ -346,10 +346,10 @@ function generateContextualResponse(
     return {
       id: `ai-${Date.now()}`,
       sender: 'assistant',
-      text: `🔄 **Internal Stock Transfers & Cycle Audits:**\n\n` +
+      text: `**Internal Stock Transfers & Cycle Audits:**\n\n` +
         `• **Recorded Transfers:** ${transfers.length} completed moves\n` +
-        `• **How to Transfer:** Click below to move inventory between facilities or storage racks with automatic real-time ledger updates.\n` +
-        `• **Stock Adjustments:** Easily perform physical inventory audits to reconcile discrepancy variances.`,
+        `• **How to Transfer:** Use the Transfers module to move inventory between facilities or storage racks with automatic real-time ledger updates.\n` +
+        `• **Stock Adjustments:** Perform physical inventory audits to reconcile discrepancy variances.`,
       timestamp: now,
       actionButtons: [
         { label: 'Open Transfers & Audits', view: 'transfers' },
@@ -371,20 +371,20 @@ function generateContextualResponse(
     return {
       id: `ai-${Date.now()}`,
       sender: 'assistant',
-      text: `👋 **Hello! I am your INVEXA Inventory Copilot.**\n\n` +
-        `I am connected directly to your warehouse database. You can ask me questions in plain English, such as:\n\n` +
-        `• *"Which products are low on stock?"*\n` +
-        `• *"What is the stock of Industrial Fasteners or Steel Plates?"*\n` +
-        `• *"Show pending deliveries and outbound shipments"*\n` +
-        `• *"Give me a warehouse capacity overview"*\n` +
-        `• *"What is the total inventory valuation?"*\n` +
-        `• *"How do I transfer stock between racks?"*`,
+      text: `**Hello! I am your INVEXA Inventory Copilot.**\n\n` +
+        `I am connected directly to your active ERP database. You can ask me questions about your inventory:\n\n` +
+        `• "Which products are low on stock?"\n` +
+        `• "What is the stock of Industrial Fasteners or Steel Plates?"\n` +
+        `• "Show pending deliveries and outbound shipments"\n` +
+        `• "Give me a warehouse capacity overview"\n` +
+        `• "What is the total inventory valuation?"\n` +
+        `• "How do I transfer stock between racks?"`,
       timestamp: now,
       actionButtons: [
-        { label: '🚨 Low Stock Alerts', view: 'stock' },
-        { label: '🚚 Pending Deliveries', view: 'deliveries' },
-        { label: '📥 Inbound Receipts', view: 'receipts' },
-        { label: '🏭 Warehouse Status', view: 'warehouses' }
+        { label: 'Low Stock Alerts', view: 'stock' },
+        { label: 'Pending Deliveries', view: 'deliveries' },
+        { label: 'Inbound Receipts', view: 'receipts' },
+        { label: 'Warehouse Status', view: 'warehouses' }
       ]
     };
   }
@@ -393,12 +393,12 @@ function generateContextualResponse(
   return {
     id: `ai-${Date.now()}`,
     sender: 'assistant',
-    text: `🤖 I searched your active inventory database for **"${rawQuery}"**.\n\n` +
-      `Here is a quick summary of current operations:\n` +
+    text: `Searched active inventory database for **"${rawQuery}"**.\n\n` +
+      `Here is a summary of current operations:\n` +
       `• **Total Products:** ${products.length} SKUs across ${warehouses.length} facilities\n` +
       `• **Total Stock On-Hand:** ${kpis.totalStock.toLocaleString()} units ($${kpis.totalValuation.toLocaleString()})\n` +
       `• **Active Alerts:** ${kpis.lowStockCount} items low, ${deliveries.filter(d => d.status === 'Waiting').length} orders awaiting stock.\n\n` +
-      `Try asking me for a specific SKU, product name, warehouse status, or click a quick link below:`,
+      `You can ask for a specific SKU, product name, warehouse status, or click a quick link below:`,
     timestamp: now,
     actionButtons: [
       { label: 'Check Stock Levels', view: 'stock' },
