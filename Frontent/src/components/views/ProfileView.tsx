@@ -248,20 +248,18 @@ export const ProfileView: React.FC = () => {
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                   Assigned Facility
                 </label>
-                <div className="relative">
-                  <Building2 className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <select
-                    value={primaryWarehouse}
-                    onChange={(e) => setPrimaryWarehouse(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                  >
-                    {warehouses.map((wh) => (
-                      <option key={wh.id} value={wh.name}>
-                        {wh.name} ({wh.city})
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <CustomSelect
+                  value={primaryWarehouse}
+                  onChange={(val) => setPrimaryWarehouse(val)}
+                  icon={Building2}
+                  options={warehouses.map((wh) => ({
+                    value: wh.name,
+                    label: wh.name,
+                    subLabel: `${wh.city} • ${wh.type}`,
+                    badge: wh.code,
+                    badgeColor: 'bg-blue-50 text-blue-700'
+                  }))}
+                />
               </div>
 
               <div className="md:col-span-2">

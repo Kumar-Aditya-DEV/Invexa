@@ -13,8 +13,8 @@ import {
   ArrowLeft,
   X,
   Trash2,
-  ArrowRight
 } from 'lucide-react';
+import { CustomSelect } from '../common/CustomSelect';
 
 export const DeliveriesView: React.FC = () => {
   const {
@@ -380,18 +380,19 @@ export const DeliveriesView: React.FC = () => {
             />
           </div>
 
-          <div className="flex items-center gap-2">
-            <select
+          <div className="flex items-center gap-2 min-w-[180px]">
+            <CustomSelect
               value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="form-control text-xs w-auto"
-            >
-              <option value="All">All Statuses</option>
-              <option value="Draft">Draft</option>
-              <option value="Waiting">Waiting (Stock Shortage)</option>
-              <option value="Ready">Ready to Ship</option>
-              <option value="Done">Done (Dispatched)</option>
-            </select>
+              onChange={(val) => setFilterStatus(val)}
+              options={[
+                { value: 'All', label: 'All Statuses' },
+                { value: 'Draft', label: 'Draft', badge: 'New', badgeColor: 'bg-slate-100 text-slate-700' },
+                { value: 'Waiting', label: 'Waiting (Shortage)', badge: 'Blocked', badgeColor: 'bg-amber-100 text-amber-700' },
+                { value: 'Ready', label: 'Ready to Ship', badge: 'Ready', badgeColor: 'bg-emerald-100 text-emerald-700' },
+                { value: 'Done', label: 'Done (Dispatched)', badge: 'Done', badgeColor: 'bg-blue-100 text-blue-700' }
+              ]}
+              size="sm"
+            />
           </div>
         </div>
       </div>
@@ -587,15 +588,17 @@ export const DeliveriesView: React.FC = () => {
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="form-label">Dispatch Facility *</label>
-                      <select
+                      <CustomSelect
                         value={wizardData.warehouseId}
-                        onChange={(e) => setWizardData({ ...wizardData, warehouseId: e.target.value })}
-                        className="form-control text-xs"
-                      >
-                        {warehouses.map(w => (
-                          <option key={w.id} value={w.id}>{w.name}</option>
-                        ))}
-                      </select>
+                        onChange={(val) => setWizardData({ ...wizardData, warehouseId: val })}
+                        options={warehouses.map(w => ({
+                          value: w.id,
+                          label: w.name,
+                          subLabel: `${w.city} • ${w.code}`,
+                          badge: w.code
+                        }))}
+                        size="md"
+                      />
                     </div>
                     <div>
                       <label className="form-label">Scheduled Dispatch Date *</label>
@@ -645,17 +648,18 @@ export const DeliveriesView: React.FC = () => {
                       <div key={idx} className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
                         <div className="md:col-span-2">
                           <label className="form-label text-[11px]">Product Item</label>
-                          <select
+                          <CustomSelect
                             value={item.productId}
-                            onChange={(e) => handleUpdateWizardItem(idx, e.target.value)}
-                            className="form-control text-xs"
-                          >
-                            {products.map(p => (
-                              <option key={p.id} value={p.id}>
-                                {p.name} (Avail: {p.available} {p.unit})
-                              </option>
-                            ))}
-                          </select>
+                            onChange={(val) => handleUpdateWizardItem(idx, val)}
+                            options={products.map(p => ({
+                              value: p.id,
+                              label: p.name,
+                              subLabel: `SKU: ${p.sku} | ${p.category}`,
+                              badge: `${p.available} ${p.unit} Avail`,
+                              badgeColor: p.available > 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'
+                            }))}
+                            size="sm"
+                          />
                         </div>
                         <div>
                           <label className="form-label text-[11px]">Requested Qty ({item.unit})</label>

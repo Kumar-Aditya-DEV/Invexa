@@ -11,6 +11,7 @@ import {
   FolderTree,
   CheckCircle2
 } from 'lucide-react';
+import { CustomSelect } from '../common/CustomSelect';
 
 export const WarehousesView: React.FC = () => {
   const { warehouses, locations, products, addWarehouse, addLocation } = useStockSense();
@@ -319,16 +320,17 @@ export const WarehousesView: React.FC = () => {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="form-label">Facility Type</label>
-                    <select
+                    <CustomSelect
                       value={whForm.type}
-                      onChange={(e) => setWhForm({ ...whForm, type: e.target.value })}
-                      className="form-control text-xs"
-                    >
-                      <option>Distribution Center</option>
-                      <option>Production & Assembly</option>
-                      <option>Cross-Dock Hub</option>
-                      <option>Cold Storage</option>
-                    </select>
+                      onChange={(val) => setWhForm({ ...whForm, type: val })}
+                      options={[
+                        'Distribution Center',
+                        'Production & Assembly',
+                        'Cross-Dock Hub',
+                        'Cold Storage'
+                      ]}
+                      size="md"
+                    />
                   </div>
                   <div>
                     <label className="form-label">Capacity (Units)</label>
@@ -385,15 +387,17 @@ export const WarehousesView: React.FC = () => {
               <div className="p-6 space-y-4">
                 <div>
                   <label className="form-label">Parent Warehouse *</label>
-                  <select
+                  <CustomSelect
                     value={locForm.warehouseId}
-                    onChange={(e) => setLocForm({ ...locForm, warehouseId: e.target.value })}
-                    className="form-control text-xs"
-                  >
-                    {warehouses.map(w => (
-                      <option key={w.id} value={w.id}>{w.name} ({w.code})</option>
-                    ))}
-                  </select>
+                    onChange={(val) => setLocForm({ ...locForm, warehouseId: val })}
+                    options={warehouses.map(w => ({
+                      value: w.id,
+                      label: w.name,
+                      subLabel: `${w.city} • ${w.code}`,
+                      badge: w.code
+                    }))}
+                    size="md"
+                  />
                 </div>
 
                 <div>
@@ -422,17 +426,18 @@ export const WarehousesView: React.FC = () => {
                   </div>
                   <div>
                     <label className="form-label">Location Type</label>
-                    <select
+                    <CustomSelect
                       value={locForm.type}
-                      onChange={(e) => setLocForm({ ...locForm, type: e.target.value as any })}
-                      className="form-control text-xs"
-                    >
-                      <option value="Storage">Storage</option>
-                      <option value="Production">Production</option>
-                      <option value="Receiving Dock">Receiving Dock</option>
-                      <option value="Dispatch Dock">Dispatch Dock</option>
-                      <option value="Secure Cage">Secure Cage</option>
-                    </select>
+                      onChange={(val) => setLocForm({ ...locForm, type: val as any })}
+                      options={[
+                        'Storage',
+                        'Production',
+                        'Receiving Dock',
+                        'Dispatch Dock',
+                        'Secure Cage'
+                      ]}
+                      size="md"
+                    />
                   </div>
                 </div>
 

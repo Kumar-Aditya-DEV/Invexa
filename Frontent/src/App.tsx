@@ -4,6 +4,7 @@ import { Sidebar } from './components/layout/Sidebar';
 import { Navbar } from './components/layout/Navbar';
 import { CommandPalette } from './components/layout/CommandPalette';
 import { ToastContainer } from './components/layout/ToastContainer';
+import { InvexaAICopilot } from './components/chat/InvexaAICopilot';
 
 // Views
 import { DashboardView } from './components/views/DashboardView';
@@ -89,6 +90,9 @@ const MainLayout: React.FC = () => {
 
       {/* Global Command Spotlight Palette (⌘K / Ctrl+K) */}
       <CommandPalette />
+
+      {/* Intelligent INVEXA AI Copilot Chatbot */}
+      <InvexaAICopilot />
 
       {/* Semantic Notification Toasts */}
       <ToastContainer />
