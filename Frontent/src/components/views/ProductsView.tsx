@@ -499,21 +499,21 @@ export const ProductsView: React.FC = () => {
       </div>
 
       {/* Products Table */}
-      <div className="card overflow-hidden">
+      <div className="card overflow-hidden border border-slate-200 shadow-sm">
         <div className="table-responsive">
-          <table className="stock-table">
+          <table className="stock-table min-w-[1080px]">
             <thead>
               <tr>
-                <th>Product Item</th>
-                <th>SKU Code</th>
-                <th>Category</th>
-                <th>Current Stock</th>
-                <th>Unit</th>
-                <th>Warehouse</th>
-                <th>Rack Location</th>
-                <th>Reorder Level</th>
-                <th>Status</th>
-                <th className="text-right">Actions</th>
+                <th className="min-w-[220px]">Product Item</th>
+                <th className="w-28">SKU Code</th>
+                <th className="w-32">Category</th>
+                <th className="w-28">Current Stock</th>
+                <th className="w-20">Unit</th>
+                <th className="w-36">Warehouse</th>
+                <th className="w-32">Rack Location</th>
+                <th className="w-28">Reorder Level</th>
+                <th className="w-28 text-center">Status</th>
+                <th className="w-32 text-right pr-6">Actions</th>
               </tr>
             </thead>
             <tbody>

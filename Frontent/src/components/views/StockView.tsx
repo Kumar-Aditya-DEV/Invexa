@@ -149,20 +149,20 @@ export const StockView: React.FC = () => {
       </div>
 
       {/* Stock Matrix Table */}
-      <div className="card overflow-hidden">
+      <div className="card overflow-hidden border border-slate-200 shadow-sm">
         <div className="table-responsive">
-          <table className="stock-table">
+          <table className="stock-table min-w-[1050px]">
             <thead>
               <tr>
-                <th>Product Item</th>
-                <th>SKU Code</th>
-                <th>Facility</th>
-                <th>Current Stock</th>
-                <th>Reserved Stock</th>
-                <th>Free to Use (Available)</th>
-                <th>Assigned Location</th>
-                <th>Status</th>
-                <th className="text-right">Actions</th>
+                <th className="min-w-[200px]">Product Item</th>
+                <th className="w-28">SKU Code</th>
+                <th className="w-36">Facility</th>
+                <th className="w-28">Current Stock</th>
+                <th className="w-28">Reserved Stock</th>
+                <th className="w-36">Free to Use (Available)</th>
+                <th className="w-32">Assigned Location</th>
+                <th className="w-28 text-center">Status</th>
+                <th className="w-28 text-right pr-6">Actions</th>
               </tr>
             </thead>
             <tbody>

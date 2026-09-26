@@ -829,7 +829,7 @@ export const StockSenseProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
       const updatedReceipts = prev.receipts.map((r: Receipt) => {
         if (r.id === id || r.reference === id) {
-          return { ...r, status: 'Done' as const, validatedAt: new Date().toISOString() };
+          return { ...r, status: 'Done' as const, isLate: false, validatedAt: new Date().toISOString() };
         }
         return r;
       });
@@ -960,7 +960,7 @@ export const StockSenseProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
       const updatedDeliveries = prev.deliveries.map((d: DeliveryOrder) => {
         if (d.id === id || d.reference === id) {
-          return { ...d, status: 'Done' as const, validatedAt: new Date().toISOString() };
+          return { ...d, status: 'Done' as const, isLate: false, validatedAt: new Date().toISOString() };
         }
         return d;
       });

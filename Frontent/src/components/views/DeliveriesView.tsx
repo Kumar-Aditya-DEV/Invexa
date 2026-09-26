@@ -398,20 +398,20 @@ export const DeliveriesView: React.FC = () => {
 
       {/* List vs Kanban */}
       {viewMode === 'list' ? (
-        <div className="card overflow-hidden">
+        <div className="card overflow-hidden border border-slate-200 shadow-sm">
           <div className="table-responsive">
-            <table className="stock-table">
+            <table className="stock-table min-w-[1050px]">
               <thead>
                 <tr>
-                  <th>Delivery Ref ID</th>
-                  <th>Client / Customer</th>
-                  <th>Line Items</th>
-                  <th>Total Units</th>
-                  <th>Dispatch Facility</th>
-                  <th>Scheduled Date</th>
-                  <th>Logistics Carrier</th>
-                  <th>Status</th>
-                  <th className="text-right">Actions</th>
+                  <th className="w-32">Delivery Ref ID</th>
+                  <th className="min-w-[160px]">Client / Customer</th>
+                  <th className="min-w-[200px]">Line Items</th>
+                  <th className="w-28 text-center">Total Units</th>
+                  <th className="w-36">Dispatch WH</th>
+                  <th className="w-32">Scheduled Date</th>
+                  <th className="w-36">Logistics Carrier</th>
+                  <th className="w-28 text-center">Status</th>
+                  <th className="w-36 text-right pr-6">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -425,8 +425,8 @@ export const DeliveriesView: React.FC = () => {
                   filteredDeliveries.map(d => {
                     const totalUnits = d.items.reduce((sum, i) => sum + Number(i.requestedQty), 0);
                     return (
-                      <tr key={d.id} className="hover:bg-slate-50 transition-colors">
-                        <td>
+                      <tr key={d.id} className="hover:bg-slate-50/80 transition-colors">
+                        <td className="whitespace-nowrap">
                           <button
                             onClick={() => setSelectedDeliveryId(d.id)}
                             className="font-mono text-xs font-bold text-blue-600 hover:underline"
@@ -435,24 +435,24 @@ export const DeliveriesView: React.FC = () => {
                           </button>
                         </td>
                         <td>
-                          <span className="font-bold text-xs text-slate-900">{d.customer}</span>
+                          <span className="font-bold text-xs text-slate-900 block">{d.customer}</span>
                         </td>
                         <td>
-                          <span className="text-xs text-slate-700">{d.items.map(i => i.productName).join(', ')}</span>
-                          <span className="block text-[10px] text-slate-400 font-mono">{d.items.length} item(s)</span>
+                          <span className="text-xs text-slate-700 block line-clamp-1">{d.items.map(i => i.productName).join(', ')}</span>
+                          <span className="text-[10px] text-slate-400 font-mono block">{d.items.length} item(s)</span>
                         </td>
-                        <td>
+                        <td className="text-center whitespace-nowrap">
                           <span className="font-bold text-xs text-slate-900">{totalUnits} units</span>
                         </td>
-                        <td className="text-xs text-slate-700 font-medium">{d.warehouseName}</td>
-                        <td className="text-xs text-slate-600 font-mono">
+                        <td className="text-xs text-slate-700 font-medium whitespace-nowrap">{d.warehouseName}</td>
+                        <td className="text-xs text-slate-600 font-mono whitespace-nowrap">
                           {d.scheduledDate}
-                          {d.isLate && (
+                          {d.isLate && d.status !== 'Done' && (
                             <span className="ml-1 text-[10px] text-red-600 font-bold bg-red-50 px-1.5 py-0.2 rounded">Late</span>
                           )}
                         </td>
-                        <td className="text-xs text-slate-500">{d.carrier || 'Pending'}</td>
-                        <td>
+                        <td className="text-xs text-slate-500 whitespace-nowrap">{d.carrier || 'Pending'}</td>
+                        <td className="text-center whitespace-nowrap">
                           <span className={`badge ${
                             d.status === 'Done' ? 'badge-done' :
                             d.status === 'Ready' ? 'badge-ready' :
@@ -461,18 +461,18 @@ export const DeliveriesView: React.FC = () => {
                             {d.status}
                           </span>
                         </td>
-                        <td className="text-right">
-                          <div className="flex items-center justify-end gap-1">
+                        <td className="text-right pr-6 whitespace-nowrap">
+                          <div className="flex items-center justify-end gap-1.5">
                             <button
                               onClick={() => setSelectedDeliveryId(d.id)}
-                              className="btn btn-subtle btn-sm text-xs"
+                              className="btn btn-secondary btn-sm text-xs px-2.5 py-1"
                             >
                               Details
                             </button>
                             {d.status !== 'Done' && (
                               <button
                                 onClick={() => validateDelivery(d.id)}
-                                className="btn btn-primary btn-sm text-xs"
+                                className="btn btn-primary btn-sm text-xs px-2.5 py-1"
                               >
                                 Validate
                               </button>
@@ -510,7 +510,7 @@ export const DeliveriesView: React.FC = () => {
                     >
                       <div className="flex items-center justify-between mb-2">
                         <span className="font-mono text-xs font-bold text-blue-600">{d.reference}</span>
-                        {d.isLate && (
+                        {d.isLate && d.status !== 'Done' && (
                           <span className="px-1.5 py-0.2 bg-red-100 text-red-700 text-[10px] font-bold rounded">Late</span>
                         )}
                       </div>

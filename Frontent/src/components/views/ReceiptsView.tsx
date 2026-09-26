@@ -381,20 +381,20 @@ export const ReceiptsView: React.FC = () => {
 
       {/* View Rendering (List or Kanban) */}
       {viewMode === 'list' ? (
-        <div className="card overflow-hidden">
+        <div className="card overflow-hidden border border-slate-200 shadow-sm">
           <div className="table-responsive">
-            <table className="stock-table">
+            <table className="stock-table min-w-[1050px]">
               <thead>
                 <tr>
-                  <th>Receipt Ref ID</th>
-                  <th>Supplier / Vendor</th>
-                  <th>Line Items</th>
-                  <th>Total Expected Qty</th>
-                  <th>Destination Facility</th>
-                  <th>Scheduled Date</th>
-                  <th>Operator</th>
-                  <th>Status</th>
-                  <th className="text-right">Actions</th>
+                  <th className="w-32">Receipt Ref ID</th>
+                  <th className="min-w-[160px]">Supplier / Vendor</th>
+                  <th className="min-w-[200px]">Line Items</th>
+                  <th className="w-28 text-center">Expected Qty</th>
+                  <th className="w-36">Destination WH</th>
+                  <th className="w-32">Scheduled Date</th>
+                  <th className="w-28">Operator</th>
+                  <th className="w-28 text-center">Status</th>
+                  <th className="w-36 text-right pr-6">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -408,8 +408,8 @@ export const ReceiptsView: React.FC = () => {
                   filteredReceipts.map(r => {
                     const totalQty = r.items.reduce((sum, i) => sum + Number(i.expectedQty), 0);
                     return (
-                      <tr key={r.id} className="hover:bg-slate-50 transition-colors">
-                        <td>
+                      <tr key={r.id} className="hover:bg-slate-50/80 transition-colors">
+                        <td className="whitespace-nowrap">
                           <button
                             onClick={() => setSelectedReceiptId(r.id)}
                             className="font-mono text-xs font-bold text-blue-600 hover:underline"
@@ -418,24 +418,24 @@ export const ReceiptsView: React.FC = () => {
                           </button>
                         </td>
                         <td>
-                          <span className="font-bold text-xs text-slate-900">{r.supplier}</span>
+                          <span className="font-bold text-xs text-slate-900 block">{r.supplier}</span>
                         </td>
                         <td>
-                          <span className="text-xs text-slate-700">{r.items.map(i => i.productName).join(', ')}</span>
-                          <span className="block text-[10px] text-slate-400 font-mono">{r.items.length} line(s)</span>
+                          <span className="text-xs text-slate-700 block line-clamp-1">{r.items.map(i => i.productName).join(', ')}</span>
+                          <span className="text-[10px] text-slate-400 font-mono block">{r.items.length} line(s)</span>
                         </td>
-                        <td>
+                        <td className="text-center whitespace-nowrap">
                           <span className="font-bold text-xs text-slate-900">{totalQty} units</span>
                         </td>
-                        <td className="text-xs text-slate-700 font-medium">{r.warehouseName}</td>
-                        <td className="text-xs text-slate-600 font-mono">
+                        <td className="text-xs text-slate-700 font-medium whitespace-nowrap">{r.warehouseName}</td>
+                        <td className="text-xs text-slate-600 font-mono whitespace-nowrap">
                           {r.scheduledDate}
-                          {r.isLate && (
+                          {r.isLate && r.status !== 'Done' && (
                             <span className="ml-1 text-[10px] text-red-600 font-bold bg-red-50 px-1.5 py-0.2 rounded">Late</span>
                           )}
                         </td>
-                        <td className="text-xs text-slate-500">{r.responsible}</td>
-                        <td>
+                        <td className="text-xs text-slate-500 whitespace-nowrap">{r.responsible}</td>
+                        <td className="text-center whitespace-nowrap">
                           <span className={`badge ${
                             r.status === 'Done' ? 'badge-done' :
                             r.status === 'Ready' ? 'badge-ready' :
@@ -444,18 +444,18 @@ export const ReceiptsView: React.FC = () => {
                             {r.status}
                           </span>
                         </td>
-                        <td className="text-right">
-                          <div className="flex items-center justify-end gap-1">
+                        <td className="text-right pr-6 whitespace-nowrap">
+                          <div className="flex items-center justify-end gap-1.5">
                             <button
                               onClick={() => setSelectedReceiptId(r.id)}
-                              className="btn btn-subtle btn-sm text-xs"
+                              className="btn btn-secondary btn-sm text-xs px-2.5 py-1"
                             >
                               Details
                             </button>
                             {r.status !== 'Done' && (
                               <button
                                 onClick={() => validateReceipt(r.id)}
-                                className="btn btn-success btn-sm text-xs"
+                                className="btn btn-success btn-sm text-xs px-2.5 py-1"
                               >
                                 Validate
                               </button>
@@ -493,7 +493,7 @@ export const ReceiptsView: React.FC = () => {
                     >
                       <div className="flex items-center justify-between mb-2">
                         <span className="font-mono text-xs font-bold text-blue-600">{r.reference}</span>
-                        {r.isLate && (
+                        {r.isLate && r.status !== 'Done' && (
                           <span className="px-1.5 py-0.2 bg-red-100 text-red-700 text-[10px] font-bold rounded">Late</span>
                         )}
                       </div>

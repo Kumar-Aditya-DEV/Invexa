@@ -138,19 +138,19 @@ export const TransfersView: React.FC = () => {
 
       {/* Tables */}
       {activeTab === 'transfers' ? (
-        <div className="card overflow-hidden">
+        <div className="card overflow-hidden border border-slate-200 shadow-sm">
           <div className="table-responsive">
-            <table className="stock-table">
+            <table className="stock-table min-w-[1050px]">
               <thead>
                 <tr>
-                  <th>Transfer Ref ID</th>
-                  <th>Product & SKU</th>
-                  <th>Origin Facility & Rack</th>
-                  <th>Destination Facility & Rack</th>
-                  <th>Quantity Moved</th>
-                  <th>Reason / Workflow</th>
-                  <th>Date</th>
-                  <th>Status</th>
+                  <th className="w-32">Transfer Ref ID</th>
+                  <th className="min-w-[180px]">Product & SKU</th>
+                  <th className="min-w-[180px]">Origin Facility & Rack</th>
+                  <th className="min-w-[180px]">Destination Facility & Rack</th>
+                  <th className="w-28 text-center">Quantity Moved</th>
+                  <th className="min-w-[160px]">Reason / Workflow</th>
+                  <th className="w-28">Date</th>
+                  <th className="w-28 text-center pr-6">Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -163,7 +163,7 @@ export const TransfersView: React.FC = () => {
                 ) : (
                   transfers.map(t => (
                     <tr key={t.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="font-mono text-xs font-bold text-blue-600">{t.reference}</td>
+                      <td className="font-mono text-xs font-bold text-blue-600 whitespace-nowrap">{t.reference}</td>
                       <td>
                         <span className="font-bold text-xs text-slate-900">{t.productName}</span>
                         <span className="block text-[10px] text-slate-400 font-mono">{t.sku}</span>
@@ -176,12 +176,12 @@ export const TransfersView: React.FC = () => {
                         <span className="text-xs text-blue-700 font-medium">{t.toWarehouseName}</span>
                         <span className="block text-[10px] font-mono text-blue-600">{t.toLocationName}</span>
                       </td>
-                      <td>
+                      <td className="text-center whitespace-nowrap">
                         <span className="font-bold text-xs text-purple-600 font-mono">{t.quantity} {t.unit}</span>
                       </td>
                       <td className="text-xs text-slate-600">{t.reason}</td>
-                      <td className="text-xs font-mono text-slate-500">{t.date}</td>
-                      <td>
+                      <td className="text-xs font-mono text-slate-500 whitespace-nowrap">{t.date}</td>
+                      <td className="text-center pr-6 whitespace-nowrap">
                         <span className="badge badge-done">
                           <CheckCircle2 className="w-3 h-3 inline mr-0.5" /> Done
                         </span>
@@ -194,20 +194,20 @@ export const TransfersView: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div className="card overflow-hidden">
+        <div className="card overflow-hidden border border-slate-200 shadow-sm">
           <div className="table-responsive">
-            <table className="stock-table">
+            <table className="stock-table min-w-[1050px]">
               <thead>
                 <tr>
-                  <th>Adjustment Ref ID</th>
-                  <th>Product Item</th>
-                  <th>Warehouse Facility</th>
-                  <th>System Qty</th>
-                  <th>Physical Count</th>
-                  <th>Difference</th>
-                  <th>Audit Reason</th>
-                  <th>Date</th>
-                  <th>Auditor</th>
+                  <th className="w-32">Adjustment Ref ID</th>
+                  <th className="min-w-[180px]">Product Item</th>
+                  <th className="w-36">Warehouse Facility</th>
+                  <th className="w-28 text-right">System Qty</th>
+                  <th className="w-28 text-right">Physical Count</th>
+                  <th className="w-28 text-center">Difference</th>
+                  <th className="min-w-[160px]">Audit Reason</th>
+                  <th className="w-28">Date</th>
+                  <th className="w-28 pr-6">Auditor</th>
                 </tr>
               </thead>
               <tbody>
