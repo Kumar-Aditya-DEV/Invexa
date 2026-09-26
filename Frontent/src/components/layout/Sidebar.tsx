@@ -15,7 +15,7 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-  Boxes
+  X
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -43,24 +43,52 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const kpis = getKPIs();
 
   const navItems = [
-    { section: 'Overview', items: [
-      { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard }
-    ]},
-    { section: 'Products & Stock', items: [
-      { id: 'products', label: 'Products Master', icon: Package, badge: kpis.totalProducts },
-      { id: 'stock', label: 'Stock Matrix', icon: Layers },
-      { id: 'categories', label: 'Categories', icon: Tags },
-      { id: 'rules', label: 'Reordering Rules', icon: Sliders }
-    ]},
-    { section: 'Operations', items: [
-      { id: 'receipts', label: 'Receipts (Inbound)', icon: ArrowDownLeft, badge: kpis.pendingReceipts > 0 ? `${kpis.pendingReceipts} req` : undefined, badgeColor: 'bg-blue-100 text-blue-700' },
-      { id: 'deliveries', label: 'Delivery Orders (Out)', icon: Truck, badge: kpis.pendingDeliveries > 0 ? `${kpis.pendingDeliveries} due` : undefined, badgeColor: 'bg-indigo-100 text-indigo-700' },
-      { id: 'transfers', label: 'Transfers & Adjustments', icon: ArrowLeftRight }
-    ]},
-    { section: 'Audit & Network', items: [
-      { id: 'history', label: 'Move History & Ledger', icon: History },
-      { id: 'warehouses', label: 'Warehouses & Locations', icon: Building2 }
-    ]}
+    {
+      section: 'Overview',
+      items: [
+        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard }
+      ]
+    },
+    {
+      section: 'Products & Stock',
+      items: [
+        { id: 'products', label: 'Products Master', icon: Package, badge: kpis.totalProducts },
+        { id: 'stock', label: 'Stock Matrix', icon: Layers },
+        { id: 'categories', label: 'Categories', icon: Tags },
+        { id: 'rules', label: 'Reordering Rules', icon: Sliders }
+      ]
+    },
+    {
+      section: 'Operations',
+      items: [
+        {
+          id: 'receipts',
+          label: 'Receipts (Inbound)',
+          icon: ArrowDownLeft,
+          badge: kpis.pendingReceipts > 0 ? `${kpis.pendingReceipts}` : undefined,
+          badgeColor: 'bg-blue-100 text-blue-700'
+        },
+        {
+          id: 'deliveries',
+          label: 'Delivery Orders (Out)',
+          icon: Truck,
+          badge: kpis.pendingDeliveries > 0 ? `${kpis.pendingDeliveries}` : undefined,
+          badgeColor: 'bg-indigo-100 text-indigo-700'
+        },
+        {
+          id: 'transfers',
+          label: 'Transfers & Adjustments',
+          icon: ArrowLeftRight
+        }
+      ]
+    },
+    {
+      section: 'Audit & Network',
+      items: [
+        { id: 'history', label: 'Move History & Ledger', icon: History },
+        { id: 'warehouses', label: 'Warehouses & Locations', icon: Building2 }
+      ]
+    }
   ];
 
   const handleNavClick = (viewId: string) => {
@@ -68,134 +96,192 @@ export const Sidebar: React.FC<SidebarProps> = ({
     setMobileOpen(false);
   };
 
-  return (
-    <>
-      {/* Mobile Backdrop */}
-      {mobileOpen && (
-        <div
-          onClick={() => setMobileOpen(false)}
-          className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-40 lg:hidden"
-        />
-      )}
-
-      {/* Main Sidebar */}
-      <aside
-        className={`fixed top-0 bottom-0 left-0 bg-white border-r border-slate-200 z-50 flex flex-col justify-between transition-all duration-300 ${
-          collapsed ? 'w-[72px]' : 'w-64'
-        } ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
-      >
-        {/* Brand Header */}
-        <div className="h-16 px-4 flex items-center justify-between border-b border-slate-200 shrink-0">
-          <div
-            onClick={() => handleNavClick('dashboard')}
-            className="flex items-center gap-3 cursor-pointer select-none overflow-hidden"
-          >
-            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center p-0.5 shadow-sm border border-slate-200 shrink-0 overflow-hidden">
-              <img src="/invexa_logo.png" alt="INVEXA Logo" className="w-full h-full object-contain" />
-            </div>
-            {!collapsed && (
+  const sidebarContent = (
+    <div className="h-full flex flex-col justify-between bg-white select-none">
+      {/* Brand Header */}
+      <div className={`h-20 border-b border-slate-100 flex items-center shrink-0 ${
+        collapsed ? 'flex-col justify-center px-2' : 'justify-between px-4'
+      }`}>
+        {collapsed ? (
+          /* Collapsed Brand Header */
+          <div className="flex flex-col items-center justify-center gap-1 w-full">
+            <button
+              onClick={() => handleNavClick('dashboard')}
+              className="w-12 h-12 rounded-2xl bg-white border border-slate-200/90 shadow-sm p-1 hover:border-blue-400 hover:shadow-md transition-all flex items-center justify-center shrink-0"
+              title="INVEXA — Go to Dashboard"
+            >
+              <img
+                src="/invexa_logo.png"
+                alt="INVEXA"
+                className="w-full h-full object-contain"
+              />
+            </button>
+            <button
+              onClick={() => setCollapsed(false)}
+              className="p-1 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors mt-0.5"
+              title="Expand Sidebar"
+            >
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        ) : (
+          /* Expanded Brand Header */
+          <>
+            <div
+              onClick={() => handleNavClick('dashboard')}
+              className="flex items-center gap-3 cursor-pointer group min-w-0"
+            >
+              <div className="w-11 h-11 rounded-2xl bg-white border border-slate-200/90 shadow-sm p-1 group-hover:border-blue-400 group-hover:shadow-md transition-all flex items-center justify-center shrink-0">
+                <img
+                  src="/invexa_logo.png"
+                  alt="INVEXA Logo"
+                  className="w-full h-full object-contain"
+                />
+              </div>
               <div className="min-w-0">
-                <span className="font-display font-extrabold text-base text-slate-900 tracking-tight leading-none block">
+                <span className="font-display font-black text-lg text-slate-900 tracking-tight leading-none block">
                   INVEXA
                 </span>
-                <span className="text-[10px] font-bold text-blue-600 tracking-wider uppercase block mt-0.5">
-                  Inventory System
+                <span className="text-[10px] font-extrabold text-blue-600 tracking-wider uppercase block mt-1">
+                  Smart Inventory
                 </span>
               </div>
-            )}
-          </div>
-
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            className="hidden lg:flex p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
-            title={collapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
-          >
-            {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-          </button>
-        </div>
-
-        {/* Navigation List */}
-        <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
-          {navItems.map((group, gIdx) => (
-            <div key={gIdx} className="space-y-1">
-              {!collapsed && (
-                <div className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
-                  {group.section}
-                </div>
-              )}
-              {group.items.map(item => {
-                const Icon = item.icon;
-                const isActive = activeView === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => handleNavClick(item.id)}
-                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
-                      isActive
-                        ? 'bg-blue-50 text-blue-600 shadow-xs border border-blue-100/60 font-bold'
-                        : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900'
-                    } ${collapsed ? 'justify-center px-0' : ''}`}
-                    title={collapsed ? item.label : undefined}
-                  >
-                    <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-blue-600' : 'text-slate-500'}`} />
-                    {!collapsed && (
-                      <div className="flex-1 flex items-center justify-between text-left truncate">
-                        <span className="truncate">{item.label}</span>
-                        {item.badge !== undefined && (
-                          <span
-                            className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full ${
-                              item.badgeColor || 'bg-slate-100 text-slate-600'
-                            }`}
-                          >
-                            {item.badge}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </button>
-                );
-              })}
             </div>
-          ))}
-        </div>
 
-        {/* Sidebar Footer User Info */}
-        <div className="p-3 border-t border-slate-200 bg-slate-50/50 shrink-0">
-          <div
-            onClick={() => handleNavClick('profile')}
-            className={`flex items-center gap-3 p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors cursor-pointer ${
-              collapsed ? 'justify-center p-1.5' : ''
-            }`}
-          >
-            <img
-              src={currentUser.avatar}
-              alt={currentUser.fullName}
-              className="w-8 h-8 rounded-full object-cover ring-2 ring-blue-100 shrink-0"
-            />
+            <button
+              onClick={() => setCollapsed(true)}
+              className="hidden lg:flex p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors shrink-0"
+              title="Collapse Sidebar"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+          </>
+        )}
+      </div>
+
+      {/* Navigation List */}
+      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-5">
+        {navItems.map((group, gIdx) => (
+          <div key={gIdx} className="space-y-1">
             {!collapsed && (
-              <div className="flex-1 min-w-0">
-                <span className="text-xs font-bold text-slate-900 truncate block">
-                  {currentUser.fullName}
-                </span>
-                <span className="text-[10px] text-slate-400 truncate block">
-                  {currentUser.role}
-                </span>
+              <div className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+                {group.section}
               </div>
             )}
-            {!collapsed && (
+            {group.items.map(item => {
+              const Icon = item.icon;
+              const isActive = activeView === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handleNavClick(item.id)}
+                  className={`w-full flex items-center gap-3 rounded-xl text-xs font-semibold transition-all group ${
+                    collapsed
+                      ? 'justify-center p-3'
+                      : 'px-3.5 py-2.5'
+                  } ${
+                    isActive
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20 font-bold'
+                      : 'text-slate-600 hover:bg-slate-100/90 hover:text-slate-900'
+                  }`}
+                  title={collapsed ? item.label : undefined}
+                >
+                  <Icon className={`w-5 h-5 shrink-0 transition-transform group-hover:scale-105 ${
+                    isActive ? 'text-white' : 'text-slate-500 group-hover:text-blue-600'
+                  }`} />
+                  {!collapsed && (
+                    <div className="flex-1 flex items-center justify-between text-left truncate">
+                      <span className="truncate">{item.label}</span>
+                      {item.badge !== undefined && (
+                        <span
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                            isActive
+                              ? 'bg-white/20 text-white'
+                              : (item.badgeColor || 'bg-slate-100 text-slate-600')
+                          }`}
+                        >
+                          {item.badge}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+
+      {/* Sidebar Footer User Info */}
+      <div className="p-3 border-t border-slate-100 bg-slate-50/60 shrink-0">
+        <div
+          onClick={() => handleNavClick('profile')}
+          className={`flex items-center gap-3 p-2 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 transition-all cursor-pointer shadow-2xs ${
+            collapsed ? 'justify-center p-1.5' : ''
+          }`}
+        >
+          <img
+            src={currentUser.avatar}
+            alt={currentUser.fullName}
+            className="w-9 h-9 rounded-xl object-cover ring-2 ring-blue-100 shrink-0"
+          />
+          {!collapsed && (
+            <div className="flex-1 min-w-0">
+              <span className="text-xs font-bold text-slate-900 truncate block">
+                {currentUser.fullName}
+              </span>
+              <span className="text-[10px] text-slate-400 truncate block font-medium">
+                {currentUser.role}
+              </span>
+            </div>
+          )}
+          {!collapsed && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                logout();
+              }}
+              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+              title="Log Out"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      {/* Mobile Drawer (Slide-over) */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div
+            onClick={() => setMobileOpen(false)}
+            className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity"
+          />
+          <div className="fixed inset-y-0 left-0 w-64 bg-white shadow-2xl z-50 animate-fade-in">
+            <div className="absolute top-4 right-4 z-10">
               <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  logout();
-                }}
-                className="p-1 text-slate-400 hover:text-red-600 rounded transition-colors"
-                title="Log Out"
+                onClick={() => setMobileOpen(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100"
               >
-                <LogOut className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
-            )}
+            </div>
+            {sidebarContent}
           </div>
         </div>
+      )}
+
+      {/* Desktop Sticky Sidebar (Naturally adjacent flex item, NEVER overlaps main content) */}
+      <aside
+        className={`hidden lg:block sticky top-0 h-screen bg-white border-r border-slate-200/90 shrink-0 transition-all duration-300 z-30 shadow-xs ${
+          collapsed ? 'w-20' : 'w-64'
+        }`}
+      >
+        {sidebarContent}
       </aside>
     </>
   );

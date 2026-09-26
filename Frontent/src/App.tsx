@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StockSenseProvider, useStockSense } from './context/StockSenseContext';
 import { Sidebar } from './components/layout/Sidebar';
 import { Navbar } from './components/layout/Navbar';
@@ -20,6 +20,8 @@ import { AuthView } from './components/views/AuthView';
 
 const MainLayout: React.FC = () => {
   const { activeView } = useStockSense();
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const renderActiveView = () => {
     switch (activeView) {
@@ -57,7 +59,7 @@ const MainLayout: React.FC = () => {
   // If on Auth view standalone
   if (activeView === 'auth' || activeView === 'login') {
     return (
-      <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col justify-center py-6 px-4">
+      <div className="min-h-screen bg-slate-100 flex flex-col justify-center py-6 px-4">
         <AuthView />
         <ToastContainer />
       </div>
@@ -65,21 +67,24 @@ const MainLayout: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col antialiased">
-      <div className="flex flex-1 overflow-hidden">
-        {/* Collapsible Persistent Sidebar */}
-        <Sidebar />
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex antialiased">
+      {/* Sidebar as sticky side-by-side flex element */}
+      <Sidebar
+        collapsed={sidebarCollapsed}
+        setCollapsed={setSidebarCollapsed}
+        mobileOpen={mobileMenuOpen}
+        setMobileOpen={setMobileMenuOpen}
+      />
 
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
-          {/* Top Operational Navigation Bar */}
-          <Navbar />
+      {/* Main Content Area (Natural flex sibling - 0 overlap possible) */}
+      <div className="flex-1 flex flex-col min-w-0 min-h-screen overflow-x-hidden">
+        {/* Top Operational Navigation Bar */}
+        <Navbar onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)} />
 
-          {/* Dynamic Module Workspace */}
-          <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl w-full mx-auto animate-fade-in pb-16">
-            {renderActiveView()}
-          </main>
-        </div>
+        {/* Dynamic Module Workspace */}
+        <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl w-full mx-auto pb-16">
+          {renderActiveView()}
+        </main>
       </div>
 
       {/* Global Command Spotlight Palette (⌘K / Ctrl+K) */}
