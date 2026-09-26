@@ -69,8 +69,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       items: [
         { id: 'products', label: 'Products Master', icon: Package, badge: kpis.totalProducts },
         { id: 'stock', label: 'Stock Matrix', icon: Layers },
-        { id: 'categories', label: 'Categories', icon: Tags },
-        { id: 'rules', label: 'Reordering Rules', icon: Sliders }
+        { id: 'categories', label: 'Categories', icon: Tags }
       ]
     },
     {
