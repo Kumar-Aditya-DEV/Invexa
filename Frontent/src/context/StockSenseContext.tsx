@@ -81,7 +81,11 @@ interface StockSenseContextType {
   }) => void;
 
   addWarehouse: (data: Partial<Warehouse>) => void;
+  updateWarehouse: (id: string, updates: Partial<Warehouse>) => void;
+  deleteWarehouse: (id: string) => void;
   addLocation: (data: Partial<StorageLocation>) => void;
+  updateLocation: (id: string, updates: Partial<StorageLocation>) => void;
+  deleteLocation: (id: string) => void;
   addCategory: (data: Partial<Category>) => void;
   addReorderRule: (data: Partial<ReorderRule>) => void;
 
@@ -1178,6 +1182,23 @@ export const StockSenseProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     showToast('Warehouse facility registered.', 'success');
   };
 
+  const updateWarehouse = (id: string, updates: Partial<Warehouse>) => {
+    setData((prev: typeof INITIAL_DATA) => ({
+      ...prev,
+      warehouses: prev.warehouses.map((w: Warehouse) => (w.id === id ? { ...w, ...updates } : w))
+    }));
+    showToast('Warehouse facility updated successfully.', 'success');
+  };
+
+  const deleteWarehouse = (id: string) => {
+    setData((prev: typeof INITIAL_DATA) => ({
+      ...prev,
+      warehouses: prev.warehouses.filter((w: Warehouse) => w.id !== id),
+      locations: prev.locations.filter((l: StorageLocation) => l.warehouseId !== id)
+    }));
+    showToast('Warehouse removed.', 'info');
+  };
+
   const addLocation = (locData: Partial<StorageLocation>) => {
     const id = `LOC-${String(data.locations.length + 1).padStart(3, '0')}`;
     const wh = data.warehouses.find((w: Warehouse) => w.id === locData.warehouseId) || data.warehouses[0];
@@ -1196,6 +1217,31 @@ export const StockSenseProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     setData((prev: typeof INITIAL_DATA) => ({ ...prev, locations: [...prev.locations, newLoc] }));
     showToast('Storage location created.', 'success');
+  };
+
+  const updateLocation = (id: string, updates: Partial<StorageLocation>) => {
+    setData((prev: typeof INITIAL_DATA) => {
+      let warehouseName: string | undefined;
+      if (updates.warehouseId) {
+        const wh = prev.warehouses.find((w: Warehouse) => w.id === updates.warehouseId);
+        if (wh) warehouseName = wh.shortName || wh.name;
+      }
+      return {
+        ...prev,
+        locations: prev.locations.map((l: StorageLocation) =>
+          l.id === id ? { ...l, ...updates, ...(warehouseName ? { warehouseName } : {}) } : l
+        )
+      };
+    });
+    showToast('Storage location updated.', 'success');
+  };
+
+  const deleteLocation = (id: string) => {
+    setData((prev: typeof INITIAL_DATA) => ({
+      ...prev,
+      locations: prev.locations.filter((l: StorageLocation) => l.id !== id)
+    }));
+    showToast('Storage location removed.', 'info');
   };
 
   const addCategory = (catData: Partial<Category>) => {
@@ -1344,7 +1390,11 @@ export const StockSenseProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         createTransfer,
         createAdjustment,
         addWarehouse,
+        updateWarehouse,
+        deleteWarehouse,
         addLocation,
+        updateLocation,
+        deleteLocation,
         addCategory,
         addReorderRule,
         markNotificationRead,
