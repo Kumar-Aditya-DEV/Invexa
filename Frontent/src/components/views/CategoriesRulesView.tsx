@@ -21,6 +21,7 @@ import {
   PlusCircle,
   FileCheck
 } from 'lucide-react';
+import { CustomSelect } from '../common/CustomSelect';
 
 export const CategoriesRulesView: React.FC = () => {
   const {
@@ -624,34 +625,34 @@ export const CategoriesRulesView: React.FC = () => {
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                   Select Product *
                 </label>
-                <select
+                <CustomSelect
                   value={selectedProductId}
-                  onChange={(e) => setSelectedProductId(e.target.value)}
-                  className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                >
-                  {products.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name} ({p.sku}) - Current: {p.stock} {p.unit}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(val) => setSelectedProductId(val)}
+                  options={products.map((p) => ({
+                    value: p.id,
+                    label: p.name,
+                    subLabel: `SKU: ${p.sku} • Stock: ${p.stock} ${p.unit}`,
+                    badge: `${p.stock} ${p.unit}`
+                  }))}
+                  size="md"
+                />
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                   Warehouse Facility *
                 </label>
-                <select
+                <CustomSelect
                   value={ruleWarehouseId}
-                  onChange={(e) => setRuleWarehouseId(e.target.value)}
-                  className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                >
-                  {warehouses.map((wh) => (
-                    <option key={wh.id} value={wh.id}>
-                      {wh.name} ({wh.code})
-                    </option>
-                  ))}
-                </select>
+                  onChange={(val) => setRuleWarehouseId(val)}
+                  options={warehouses.map((wh) => ({
+                    value: wh.id,
+                    label: wh.name,
+                    subLabel: `${wh.city} • ${wh.code}`,
+                    badge: wh.code
+                  }))}
+                  size="md"
+                />
               </div>
 
               <div className="grid grid-cols-3 gap-3">

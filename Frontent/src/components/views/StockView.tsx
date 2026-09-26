@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useStockSense } from '../../context/StockSenseContext';
 import { Layers, Search, Filter, ArrowLeftRight, Tune, Eye } from 'lucide-react';
+import { CustomSelect } from '../common/CustomSelect';
 
 export const StockView: React.FC = () => {
   const { products, warehouses, categories, setSelectedProductId, setActiveView } = useStockSense();
@@ -112,38 +113,45 @@ export const StockView: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <select
-              value={filterWarehouse}
-              onChange={(e) => setFilterWarehouse(e.target.value)}
-              className="form-control text-xs w-auto"
-            >
-              <option value="All">All Facilities</option>
-              {warehouses.map(w => (
-                <option key={w.id} value={w.id}>{w.name}</option>
-              ))}
-            </select>
+            <div className="min-w-[180px]">
+              <CustomSelect
+                value={filterWarehouse}
+                onChange={(val) => setFilterWarehouse(val)}
+                options={[
+                  { value: 'All', label: 'All Facilities' },
+                  ...warehouses.map(w => ({
+                    value: w.id,
+                    label: w.name,
+                    subLabel: w.city,
+                    badge: w.code
+                  }))
+                ]}
+                size="sm"
+              />
+            </div>
 
-            <select
-              value={filterCategory}
-              onChange={(e) => setFilterCategory(e.target.value)}
-              className="form-control text-xs w-auto"
-            >
-              <option value="All">All Categories</option>
-              {categories.map(c => (
-                <option key={c.id} value={c.name}>{c.name}</option>
-              ))}
-            </select>
+            <div className="min-w-[170px]">
+              <CustomSelect
+                value={filterCategory}
+                onChange={(val) => setFilterCategory(val)}
+                options={['All', ...categories.map(c => c.name)]}
+                size="sm"
+              />
+            </div>
 
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="form-control text-xs w-auto"
-            >
-              <option value="All">All Stock Status</option>
-              <option value="In Stock">In Stock</option>
-              <option value="Low Stock">Low Stock</option>
-              <option value="Out of Stock">Out of Stock</option>
-            </select>
+            <div className="min-w-[160px]">
+              <CustomSelect
+                value={filterStatus}
+                onChange={(val) => setFilterStatus(val)}
+                options={[
+                  { value: 'All', label: 'All Stock Status' },
+                  { value: 'In Stock', label: 'In Stock', badge: 'Good', badgeColor: 'bg-emerald-50 text-emerald-700' },
+                  { value: 'Low Stock', label: 'Low Stock', badge: 'Low', badgeColor: 'bg-amber-50 text-amber-700' },
+                  { value: 'Out of Stock', label: 'Out of Stock', badge: 'Zero', badgeColor: 'bg-rose-50 text-rose-700' }
+                ]}
+                size="sm"
+              />
+            </div>
           </div>
         </div>
       </div>
