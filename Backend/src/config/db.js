@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 async function connectDB(uri) {
-  const mongoUri = uri || process.env.MONGODB_URI || 'mongodb+srv://invexa:invexa%40123@cluster0.trkwqdl.mongodb.net/?appName=Cluster0';
+  const mongoUri = uri || process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/stocksense';
   try {
     const conn = await mongoose.connect(mongoUri);
     console.log(`[MongoDB] Connected: ${conn.connection.host}/${conn.connection.name}`);
