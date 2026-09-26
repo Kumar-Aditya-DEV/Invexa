@@ -3,6 +3,7 @@ const cors = require('cors');
 const errorHandler = require('./middleware/errorHandler');
 
 // Route imports
+const authRouter = require('./routes/auth');
 const receiptsRouter = require('./routes/receipts');
 const deliveriesRouter = require('./routes/deliveries');
 const transfersRouter = require('./routes/transfers');
@@ -23,6 +24,8 @@ app.get('/health', (req, res) => {
 });
 
 // API Routes
+app.use('/api/auth', authRouter);
+app.use('/api/setup', authRouter);
 app.use('/api/receipts', receiptsRouter);
 app.use('/api/deliveries', deliveriesRouter);
 app.use('/api/transfers', transfersRouter);

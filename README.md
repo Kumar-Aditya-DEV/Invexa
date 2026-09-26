@@ -388,13 +388,13 @@ Representative codes —
 ### Full Route List
 ```text
 Auth
-POST   /api/auth/login
-POST   /api/auth/logout
-GET    /api/auth/me                → allowed even mid mustChangePassword
-PUT    /api/auth/change-password
+POST   /api/auth/login             → rate-limited via express-rate-limit (10 requests per 15 minutes window, returns 429 RATE_LIMITED); rejects disabled users (active === false) with 403; issues stateless JWT containing { userId, role } only
+POST   /api/auth/logout            → client-side token discard (no server blocklist); allowed mid mustChangePassword
+GET    /api/auth/me                → returns current user profile; allowed mid mustChangePassword
+PUT    /api/auth/change-password   → updates password and clears mustChangePassword flag
 
-Bootstrap (atomic first-user check)
-POST   /api/setup/first-admin
+Bootstrap (atomic first-user check, PRD §5.1)
+POST   /api/setup/first-admin      → atomic first-user creation using findOneAndUpdate + upsert against _meta sentinel; permanently inert (409 ALREADY_BOOTSTRAPPED) after first success
 
 Users [Manager only]
 GET    /api/users
