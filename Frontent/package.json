@@ -10,8 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@types/node": "^26.6.3",
+    "chart.js": "^4.5.1",
+    "lucide-react": "^1.48.0",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-chartjs-2": "^5.3.1",
+    "react-dom": "^19.2.8",
+    "typescript": "^7.0.2"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
