@@ -1,0 +1,39 @@
+{
+  "name": "stocksense-backend",
+  "version": "1.0.0",
+  "description": "StockSense Inventory Transaction Engine (Segment B)",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node src/server.js",
+    "reconcile": "node src/scripts/reconcile.js",
+    "test": "jest --runInBand --detectOpenHandles --forceExit"
+  },
+  "keywords": [
+    "inventory",
+    "stocksense",
+    "ledger",
+    "quants",
+    "concurrency",
+    "transactions"
+  ],
+  "author": "Invexa Team",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "decimal.js": "^10.6.0",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "mongoose": "^8.24.4"
+  },
+  "devDependencies": {
+    "cross-env": "^10.1.0",
+    "jest": "^29.7.0",
+    "mongodb-memory-server": "^10.1.4",
+    "supertest": "^7.1.4"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testTimeout": 30000
+  }
+}
