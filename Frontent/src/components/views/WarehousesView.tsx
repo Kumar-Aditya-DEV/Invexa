@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useStockSense } from '../../context/StockSenseContext';
+import { Warehouse, StorageLocation } from '../../types';
 import {
   Building2,
   MapPin,
@@ -9,26 +10,57 @@ import {
   Layers,
   Box,
   FolderTree,
-  CheckCircle2
+  CheckCircle2,
+  Edit2,
+  Trash2,
+  Settings2,
+  Check
 } from 'lucide-react';
+import { CustomSelect } from '../common/CustomSelect';
 
 export const WarehousesView: React.FC = () => {
-  const { warehouses, locations, products, addWarehouse, addLocation } = useStockSense();
+  const {
+    warehouses,
+    locations,
+    products,
+    addWarehouse,
+    updateWarehouse,
+    deleteWarehouse,
+    addLocation,
+    updateLocation,
+    deleteLocation
+  } = useStockSense();
 
   const [isAddWHModalOpen, setIsAddWHModalOpen] = useState(false);
+  const [isEditWHModalOpen, setIsEditWHModalOpen] = useState(false);
   const [isAddLocModalOpen, setIsAddLocModalOpen] = useState(false);
+  const [isEditLocModalOpen, setIsEditLocModalOpen] = useState(false);
 
-  // Warehouse Form State
+  // New Warehouse Form State
   const [whForm, setWhForm] = useState({
     name: '',
     code: '',
     city: '',
     type: 'Distribution Center',
     capacity: 10000,
-    address: ''
+    address: '',
+    manager: 'Alex Rivera'
   });
 
-  // Location Form State
+  // Edit Warehouse Form State
+  const [editWHForm, setEditWHForm] = useState({
+    id: '',
+    name: '',
+    code: '',
+    city: '',
+    type: 'Distribution Center',
+    capacity: 10000,
+    address: '',
+    manager: 'Alex Rivera',
+    status: 'Active' as const
+  });
+
+  // New Location Form State
   const [locForm, setLocForm] = useState({
     warehouseId: warehouses[0]?.id || 'WH-001',
     name: '',
@@ -39,7 +71,20 @@ export const WarehousesView: React.FC = () => {
     shelf: 'Tier 1'
   });
 
-  const handleSaveWH = (e: React.FormEvent) => {
+  // Edit Location Form State
+  const [editLocForm, setEditLocForm] = useState({
+    id: '',
+    warehouseId: warehouses[0]?.id || 'WH-001',
+    name: '',
+    code: '',
+    type: 'Storage' as const,
+    capacity: 2500,
+    aisle: 'Aisle 1',
+    shelf: 'Tier 1'
+  });
+
+  // Handlers for Warehouse
+  const handleSaveNewWH = (e: React.FormEvent) => {
     e.preventDefault();
     addWarehouse(whForm);
     setIsAddWHModalOpen(false);
@@ -49,11 +94,40 @@ export const WarehousesView: React.FC = () => {
       city: '',
       type: 'Distribution Center',
       capacity: 10000,
-      address: ''
+      address: '',
+      manager: 'Alex Rivera'
     });
   };
 
-  const handleSaveLoc = (e: React.FormEvent) => {
+  const handleOpenEditWH = (wh: Warehouse) => {
+    setEditWHForm({
+      id: wh.id,
+      name: wh.name,
+      code: wh.code,
+      city: wh.city,
+      type: wh.type,
+      capacity: wh.capacity,
+      address: wh.address,
+      manager: wh.manager,
+      status: wh.status || 'Active'
+    });
+    setIsEditWHModalOpen(true);
+  };
+
+  const handleSaveEditWH = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateWarehouse(editWHForm.id, editWHForm);
+    setIsEditWHModalOpen(false);
+  };
+
+  const handleDeleteWH = (id: string, name: string) => {
+    if (window.confirm(`Are you sure you want to delete "${name}"? All assigned rack locations will also be unlinked.`)) {
+      deleteWarehouse(id);
+    }
+  };
+
+  // Handlers for Location
+  const handleSaveNewLoc = (e: React.FormEvent) => {
     e.preventDefault();
     addLocation(locForm);
     setIsAddLocModalOpen(false);
@@ -66,6 +140,37 @@ export const WarehousesView: React.FC = () => {
       aisle: 'Aisle 1',
       shelf: 'Tier 1'
     });
+  };
+
+  const handleOpenAddLocForWH = (whId: string) => {
+    setLocForm(prev => ({ ...prev, warehouseId: whId }));
+    setIsAddLocModalOpen(true);
+  };
+
+  const handleOpenEditLoc = (loc: StorageLocation) => {
+    setEditLocForm({
+      id: loc.id,
+      warehouseId: loc.warehouseId,
+      name: loc.name,
+      code: loc.code,
+      type: loc.type,
+      capacity: loc.capacity,
+      aisle: loc.aisle || 'Aisle 1',
+      shelf: loc.shelf || 'Tier 1'
+    });
+    setIsEditLocModalOpen(true);
+  };
+
+  const handleSaveEditLoc = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateLocation(editLocForm.id, editLocForm);
+    setIsEditLocModalOpen(false);
+  };
+
+  const handleDeleteLoc = (id: string, name: string) => {
+    if (window.confirm(`Are you sure you want to delete rack location "${name}"?`)) {
+      deleteLocation(id);
+    }
   };
 
   return (
@@ -113,21 +218,42 @@ export const WarehousesView: React.FC = () => {
           const util = Math.min(100, Math.round((totalStock / (w.capacity || 10000)) * 100));
 
           return (
-            <div key={w.id} className="card p-5 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden">
+            <div key={w.id} className="card p-5 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group">
               <div className="absolute -right-4 -top-4 w-20 h-20 bg-blue-50/70 rounded-full blur-xs pointer-events-none"></div>
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <span className="font-mono font-bold text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
                     {w.code}
                   </span>
-                  <span className="badge badge-active">{w.status}</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="badge badge-active">{w.status}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleOpenEditWH(w)}
+                      title="Edit Warehouse Details"
+                      className="p-1 rounded-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteWH(w.id, w.name)}
+                      title="Delete Warehouse"
+                      className="p-1 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
+
                 <h3 className="text-base font-bold text-slate-900 font-display">{w.name}</h3>
                 <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
                   <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                   <span className="truncate">{w.address}</span>
                 </p>
-                <p className="text-xs text-slate-400 mt-1">Manager: <strong className="text-slate-700">{w.manager}</strong></p>
+                <p className="text-xs text-slate-400 mt-1">
+                  Manager: <strong className="text-slate-700">{w.manager}</strong>
+                </p>
 
                 <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-slate-100 text-center">
                   <div>
@@ -184,15 +310,52 @@ export const WarehousesView: React.FC = () => {
                       <span>{w.name} [{w.code}]</span>
                       <span className="text-[11px] font-normal text-slate-500 font-sans">({w.city})</span>
                     </div>
-                    <span className="text-xs font-sans text-slate-500 font-semibold">{whLocs.length} assigned bins</span>
+
+                    <div className="flex items-center gap-2 font-sans">
+                      <span className="text-xs text-slate-500 font-semibold">{whLocs.length} assigned bins</span>
+                      <button
+                        type="button"
+                        onClick={() => handleOpenAddLocForWH(w.id)}
+                        className="px-2 py-0.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 text-[11px] font-bold border border-blue-200 transition-colors flex items-center gap-1"
+                        title="Add Rack to this Warehouse"
+                      >
+                        <Plus className="w-3 h-3" />
+                        <span>Add Bin</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleOpenEditWH(w)}
+                        className="p-1 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-white transition-colors"
+                        title="Edit Warehouse Details"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteWH(w.id, w.name)}
+                        className="p-1 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-white transition-colors"
+                        title="Delete Warehouse"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
 
                   <div className="pl-6 border-l-2 border-blue-300 space-y-2 mt-2">
                     {whLocs.length === 0 ? (
-                      <div className="text-slate-400 text-xs italic font-sans">No sub-locations configured.</div>
+                      <div className="text-slate-400 text-xs italic font-sans flex items-center justify-between py-1">
+                        <span>No sub-locations configured.</span>
+                        <button
+                          type="button"
+                          onClick={() => handleOpenAddLocForWH(w.id)}
+                          className="text-blue-600 hover:underline font-semibold not-italic"
+                        >
+                          + Create first rack
+                        </button>
+                      </div>
                     ) : (
                       whLocs.map((l, idx) => (
-                        <div key={l.id} className="flex items-center justify-between py-1 px-2 rounded-lg hover:bg-white transition-colors">
+                        <div key={l.id} className="group flex items-center justify-between py-1.5 px-2.5 rounded-xl hover:bg-white border border-transparent hover:border-slate-200/80 transition-all shadow-2xs">
                           <div className="flex items-center gap-2">
                             <span className="text-slate-400">{idx === whLocs.length - 1 ? '└──' : '├──'}</span>
                             <span className="font-bold text-slate-800">{l.name}</span>
@@ -201,8 +364,29 @@ export const WarehousesView: React.FC = () => {
                             </span>
                             <span className="text-slate-400 font-sans text-[11px]">({l.type})</span>
                           </div>
-                          <div className="text-right font-sans text-xs text-slate-500">
-                            Cap: <strong className="text-slate-800">{l.capacity}</strong> units
+
+                          <div className="flex items-center gap-3 font-sans text-xs">
+                            <span className="text-slate-500 text-[11px]">
+                              Cap: <strong className="text-slate-800">{l.capacity}</strong> units
+                            </span>
+                            <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1 transition-opacity">
+                              <button
+                                type="button"
+                                onClick={() => handleOpenEditLoc(l)}
+                                title="Edit Rack Location"
+                                className="p-1 rounded text-slate-400 hover:text-blue-600 hover:bg-blue-50"
+                              >
+                                <Edit2 className="w-3 h-3" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteLoc(l.id, l.name)}
+                                title="Delete Rack Location"
+                                className="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            </div>
                           </div>
                         </div>
                       ))
@@ -226,7 +410,7 @@ export const WarehousesView: React.FC = () => {
                 <span className="w-3 h-3 rounded-full bg-blue-600"></span>
                 <span className="font-semibold text-slate-700">Storage & Pallet Racks</span>
               </div>
-              <span className="font-bold text-slate-900">4 Racks</span>
+              <span className="font-bold text-slate-900">{locations.filter(l => l.type === 'Storage').length} Racks</span>
             </div>
 
             <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50">
@@ -234,7 +418,7 @@ export const WarehousesView: React.FC = () => {
                 <span className="w-3 h-3 rounded-full bg-purple-600"></span>
                 <span className="font-semibold text-slate-700">Production Assembly Bins</span>
               </div>
-              <span className="font-bold text-slate-900">2 Bins</span>
+              <span className="font-bold text-slate-900">{locations.filter(l => l.type === 'Production').length} Bins</span>
             </div>
 
             <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50">
@@ -242,7 +426,7 @@ export const WarehousesView: React.FC = () => {
                 <span className="w-3 h-3 rounded-full bg-emerald-600"></span>
                 <span className="font-semibold text-slate-700">Receiving Inbound Docks</span>
               </div>
-              <span className="font-bold text-slate-900">1 Dock</span>
+              <span className="font-bold text-slate-900">{locations.filter(l => l.type === 'Receiving Dock').length} Docks</span>
             </div>
 
             <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50">
@@ -250,14 +434,14 @@ export const WarehousesView: React.FC = () => {
                 <span className="w-3 h-3 rounded-full bg-amber-600"></span>
                 <span className="font-semibold text-slate-700">Dispatch Outbound Bays</span>
               </div>
-              <span className="font-bold text-slate-900">1 Bay</span>
+              <span className="font-bold text-slate-900">{locations.filter(l => l.type === 'Dispatch Dock').length} Bays</span>
             </div>
           </div>
 
           <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue-900 space-y-1">
             <strong className="font-bold text-blue-800">Warehouse Guidelines:</strong>
             <p className="text-blue-700 leading-relaxed text-[11px]">
-              Every storage location is assigned a unique barcode shortcode (e.g. R-A01, PR-01) for fast barcode scanning during receiving and delivery staging.
+              Every storage location is assigned a unique barcode shortcode (e.g. R-A01, PR-01) for fast barcode scanning during receiving, transfer staging, and shipment verification.
             </p>
           </div>
         </div>
@@ -277,7 +461,7 @@ export const WarehousesView: React.FC = () => {
               </button>
             </div>
 
-            <form onSubmit={handleSaveWH}>
+            <form onSubmit={handleSaveNewWH}>
               <div className="p-6 space-y-4">
                 <div>
                   <label className="form-label">Warehouse Name *</label>
@@ -319,16 +503,18 @@ export const WarehousesView: React.FC = () => {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="form-label">Facility Type</label>
-                    <select
+                    <CustomSelect
                       value={whForm.type}
-                      onChange={(e) => setWhForm({ ...whForm, type: e.target.value })}
-                      className="form-control text-xs"
-                    >
-                      <option>Distribution Center</option>
-                      <option>Production & Assembly</option>
-                      <option>Cross-Dock Hub</option>
-                      <option>Cold Storage</option>
-                    </select>
+                      onChange={(val) => setWhForm({ ...whForm, type: val })}
+                      options={[
+                        'Distribution Center',
+                        'Production & Assembly',
+                        'Cross-Dock Hub',
+                        'Cold Storage',
+                        'Fulfillment Center'
+                      ]}
+                      size="md"
+                    />
                   </div>
                   <div>
                     <label className="form-label">Capacity (Units)</label>
@@ -340,6 +526,17 @@ export const WarehousesView: React.FC = () => {
                       className="form-control text-xs"
                     />
                   </div>
+                </div>
+
+                <div>
+                  <label className="form-label">Manager Name</label>
+                  <input
+                    type="text"
+                    value={whForm.manager}
+                    onChange={(e) => setWhForm({ ...whForm, manager: e.target.value })}
+                    placeholder="Operations Manager Name"
+                    className="form-control text-xs"
+                  />
                 </div>
 
                 <div>
@@ -367,6 +564,133 @@ export const WarehousesView: React.FC = () => {
         </div>
       )}
 
+      {/* Edit Warehouse Modal */}
+      {isEditWHModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="p-4 border-b border-slate-200 flex items-center justify-between">
+              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                <Edit2 className="w-4 h-4 text-blue-600" />
+                Edit Warehouse Facility ({editWHForm.code})
+              </h3>
+              <button onClick={() => setIsEditWHModalOpen(false)} className="p-1 rounded-lg text-slate-400 hover:text-slate-600">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEditWH}>
+              <div className="p-6 space-y-4">
+                <div>
+                  <label className="form-label">Warehouse Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editWHForm.name}
+                    onChange={(e) => setEditWHForm({ ...editWHForm, name: e.target.value })}
+                    className="form-control text-xs"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="form-label">Short Code *</label>
+                    <input
+                      type="text"
+                      required
+                      value={editWHForm.code}
+                      onChange={(e) => setEditWHForm({ ...editWHForm, code: e.target.value.toUpperCase() })}
+                      className="form-control text-xs font-mono uppercase"
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label">City / Region *</label>
+                    <input
+                      type="text"
+                      required
+                      value={editWHForm.city}
+                      onChange={(e) => setEditWHForm({ ...editWHForm, city: e.target.value })}
+                      className="form-control text-xs"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="form-label">Facility Type</label>
+                    <CustomSelect
+                      value={editWHForm.type}
+                      onChange={(val) => setEditWHForm({ ...editWHForm, type: val })}
+                      options={[
+                        'Distribution Center',
+                        'Production & Assembly',
+                        'Cross-Dock Hub',
+                        'Cold Storage',
+                        'Fulfillment Center'
+                      ]}
+                      size="md"
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label">Capacity (Units)</label>
+                    <input
+                      type="number"
+                      min="500"
+                      value={editWHForm.capacity}
+                      onChange={(e) => setEditWHForm({ ...editWHForm, capacity: Number(e.target.value) })}
+                      className="form-control text-xs"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="form-label">Manager Name</label>
+                    <input
+                      type="text"
+                      value={editWHForm.manager}
+                      onChange={(e) => setEditWHForm({ ...editWHForm, manager: e.target.value })}
+                      className="form-control text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label">Operational Status</label>
+                    <CustomSelect
+                      value={editWHForm.status}
+                      onChange={(val) => setEditWHForm({ ...editWHForm, status: val as any })}
+                      options={[
+                        { value: 'Active', label: 'Active', badge: 'Online', badgeColor: 'bg-emerald-50 text-emerald-700' },
+                        { value: 'Maintenance', label: 'Maintenance', badge: 'Maint', badgeColor: 'bg-amber-50 text-amber-700' },
+                        { value: 'Inactive', label: 'Inactive', badge: 'Offline', badgeColor: 'bg-rose-50 text-rose-700' }
+                      ]}
+                      size="md"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="form-label">Address & Landmark</label>
+                  <textarea
+                    rows={2}
+                    value={editWHForm.address}
+                    onChange={(e) => setEditWHForm({ ...editWHForm, address: e.target.value })}
+                    className="form-control text-xs"
+                  />
+                </div>
+              </div>
+
+              <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2">
+                <button type="button" onClick={() => setIsEditWHModalOpen(false)} className="btn btn-secondary text-xs">
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary text-xs">
+                  Update Warehouse
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Add Location Modal */}
       {isAddLocModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
@@ -381,19 +705,21 @@ export const WarehousesView: React.FC = () => {
               </button>
             </div>
 
-            <form onSubmit={handleSaveLoc}>
+            <form onSubmit={handleSaveNewLoc}>
               <div className="p-6 space-y-4">
                 <div>
                   <label className="form-label">Parent Warehouse *</label>
-                  <select
+                  <CustomSelect
                     value={locForm.warehouseId}
-                    onChange={(e) => setLocForm({ ...locForm, warehouseId: e.target.value })}
-                    className="form-control text-xs"
-                  >
-                    {warehouses.map(w => (
-                      <option key={w.id} value={w.id}>{w.name} ({w.code})</option>
-                    ))}
-                  </select>
+                    onChange={(val) => setLocForm({ ...locForm, warehouseId: val })}
+                    options={warehouses.map(w => ({
+                      value: w.id,
+                      label: w.name,
+                      subLabel: `${w.city} • ${w.code}`,
+                      badge: w.code
+                    }))}
+                    size="md"
+                  />
                 </div>
 
                 <div>
@@ -422,17 +748,18 @@ export const WarehousesView: React.FC = () => {
                   </div>
                   <div>
                     <label className="form-label">Location Type</label>
-                    <select
+                    <CustomSelect
                       value={locForm.type}
-                      onChange={(e) => setLocForm({ ...locForm, type: e.target.value as any })}
-                      className="form-control text-xs"
-                    >
-                      <option value="Storage">Storage</option>
-                      <option value="Production">Production</option>
-                      <option value="Receiving Dock">Receiving Dock</option>
-                      <option value="Dispatch Dock">Dispatch Dock</option>
-                      <option value="Secure Cage">Secure Cage</option>
-                    </select>
+                      onChange={(val) => setLocForm({ ...locForm, type: val as any })}
+                      options={[
+                        'Storage',
+                        'Production',
+                        'Receiving Dock',
+                        'Dispatch Dock',
+                        'Secure Cage'
+                      ]}
+                      size="md"
+                    />
                   </div>
                 </div>
 
@@ -466,6 +793,112 @@ export const WarehousesView: React.FC = () => {
                 </button>
                 <button type="submit" className="btn btn-primary text-xs">
                   Save Location
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Location Modal */}
+      {isEditLocModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="p-4 border-b border-slate-200 flex items-center justify-between">
+              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                <Edit2 className="w-4 h-4 text-blue-600" />
+                Edit Storage Location ({editLocForm.code})
+              </h3>
+              <button onClick={() => setIsEditLocModalOpen(false)} className="p-1 rounded-lg text-slate-400 hover:text-slate-600">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEditLoc}>
+              <div className="p-6 space-y-4">
+                <div>
+                  <label className="form-label">Parent Warehouse *</label>
+                  <CustomSelect
+                    value={editLocForm.warehouseId}
+                    onChange={(val) => setEditLocForm({ ...editLocForm, warehouseId: val })}
+                    options={warehouses.map(w => ({
+                      value: w.id,
+                      label: w.name,
+                      subLabel: `${w.city} • ${w.code}`,
+                      badge: w.code
+                    }))}
+                    size="md"
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label">Location / Rack Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editLocForm.name}
+                    onChange={(e) => setEditLocForm({ ...editLocForm, name: e.target.value })}
+                    className="form-control text-xs"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="form-label">Short Code *</label>
+                    <input
+                      type="text"
+                      required
+                      value={editLocForm.code}
+                      onChange={(e) => setEditLocForm({ ...editLocForm, code: e.target.value.toUpperCase() })}
+                      className="form-control text-xs font-mono uppercase"
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label">Location Type</label>
+                    <CustomSelect
+                      value={editLocForm.type}
+                      onChange={(val) => setEditLocForm({ ...editLocForm, type: val as any })}
+                      options={[
+                        'Storage',
+                        'Production',
+                        'Receiving Dock',
+                        'Dispatch Dock',
+                        'Secure Cage'
+                      ]}
+                      size="md"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="form-label">Aisle Number</label>
+                    <input
+                      type="text"
+                      value={editLocForm.aisle}
+                      onChange={(e) => setEditLocForm({ ...editLocForm, aisle: e.target.value })}
+                      className="form-control text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label">Capacity (Units)</label>
+                    <input
+                      type="number"
+                      min="100"
+                      value={editLocForm.capacity}
+                      onChange={(e) => setEditLocForm({ ...editLocForm, capacity: Number(e.target.value) })}
+                      className="form-control text-xs"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2">
+                <button type="button" onClick={() => setIsEditLocModalOpen(false)} className="btn btn-secondary text-xs">
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary text-xs">
+                  Update Location
                 </button>
               </div>
             </form>

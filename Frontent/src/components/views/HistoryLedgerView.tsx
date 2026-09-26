@@ -25,6 +25,7 @@ import {
   Eye,
   FileText
 } from 'lucide-react';
+import { CustomSelect } from '../common/CustomSelect';
 
 export const HistoryLedgerView: React.FC = () => {
   const { ledger, moveHistory, products, warehouses, showToast } = useStockSense();
@@ -322,36 +323,36 @@ export const HistoryLedgerView: React.FC = () => {
 
         <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
           {/* Direction Filter */}
-          <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800/80 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700">
-            <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400" />
-            <span className="text-xs text-slate-500 dark:text-slate-400">Direction:</span>
-            <select
+          <div className="min-w-[170px]">
+            <CustomSelect
               value={directionFilter}
-              onChange={(e) => setDirectionFilter(e.target.value as any)}
-              className="bg-transparent text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none cursor-pointer"
-            >
-              <option value="ALL">All Directions</option>
-              <option value="IN">IN (Inbound)</option>
-              <option value="OUT">OUT (Outbound)</option>
-              <option value="TRANSFER">TRANSFER (Internal)</option>
-            </select>
+              onChange={(val) => setDirectionFilter(val as any)}
+              options={[
+                { value: 'ALL', label: 'All Directions' },
+                { value: 'IN', label: 'IN (Inbound)', badge: 'IN', badgeColor: 'bg-emerald-50 text-emerald-700' },
+                { value: 'OUT', label: 'OUT (Outbound)', badge: 'OUT', badgeColor: 'bg-blue-50 text-blue-700' },
+                { value: 'TRANSFER', label: 'TRANSFER (Internal)', badge: 'TRF', badgeColor: 'bg-purple-50 text-purple-700' }
+              ]}
+              size="sm"
+            />
           </div>
 
           {activeTab === 'ledger' && (
-            <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800/80 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700">
-              <Building2 className="w-3.5 h-3.5 text-slate-400" />
-              <select
+            <div className="min-w-[180px]">
+              <CustomSelect
                 value={warehouseFilter}
-                onChange={(e) => setWarehouseFilter(e.target.value)}
-                className="bg-transparent text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none cursor-pointer"
-              >
-                <option value="ALL">All Warehouses</option>
-                {warehouses.map((wh) => (
-                  <option key={wh.id} value={wh.name}>
-                    {wh.name}
-                  </option>
-                ))}
-              </select>
+                onChange={(val) => setWarehouseFilter(val)}
+                options={[
+                  { value: 'ALL', label: 'All Warehouses' },
+                  ...warehouses.map(wh => ({
+                    value: wh.name,
+                    label: wh.name,
+                    subLabel: wh.city,
+                    badge: wh.code
+                  }))
+                ]}
+                size="sm"
+              />
             </div>
           )}
 

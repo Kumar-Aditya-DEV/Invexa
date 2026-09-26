@@ -18,6 +18,7 @@ import {
   Sliders,
   CheckCircle2
 } from 'lucide-react';
+import { CustomSelect } from '../common/CustomSelect';
 
 export const ProductsView: React.FC = () => {
   const {
@@ -460,27 +461,28 @@ export const ProductsView: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="form-control text-xs w-auto"
-            >
-              <option value="All">All Categories</option>
-              {categories.map(c => (
-                <option key={c.id} value={c.name}>{c.name}</option>
-              ))}
-            </select>
+            <div className="min-w-[170px]">
+              <CustomSelect
+                value={selectedCategory}
+                onChange={(val) => setSelectedCategory(val)}
+                options={['All', ...categories.map(c => c.name)]}
+                size="sm"
+              />
+            </div>
 
-            <select
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              className="form-control text-xs w-auto"
-            >
-              <option value="All">All Statuses</option>
-              <option value="In Stock">In Stock</option>
-              <option value="Low Stock">Low Stock</option>
-              <option value="Out of Stock">Out of Stock</option>
-            </select>
+            <div className="min-w-[160px]">
+              <CustomSelect
+                value={selectedStatus}
+                onChange={(val) => setSelectedStatus(val)}
+                options={[
+                  { value: 'All', label: 'All Statuses' },
+                  { value: 'In Stock', label: 'In Stock', badge: 'Normal', badgeColor: 'bg-emerald-50 text-emerald-700' },
+                  { value: 'Low Stock', label: 'Low Stock', badge: 'Alert', badgeColor: 'bg-amber-50 text-amber-700' },
+                  { value: 'Out of Stock', label: 'Out of Stock', badge: 'Empty', badgeColor: 'bg-rose-50 text-rose-700' }
+                ]}
+                size="sm"
+              />
+            </div>
 
             {(searchQuery || selectedCategory !== 'All' || selectedStatus !== 'All') && (
               <button
@@ -499,21 +501,21 @@ export const ProductsView: React.FC = () => {
       </div>
 
       {/* Products Table */}
-      <div className="card overflow-hidden">
+      <div className="card overflow-hidden border border-slate-200 shadow-sm">
         <div className="table-responsive">
-          <table className="stock-table">
+          <table className="stock-table min-w-[1080px]">
             <thead>
               <tr>
-                <th>Product Item</th>
-                <th>SKU Code</th>
-                <th>Category</th>
-                <th>Current Stock</th>
-                <th>Unit</th>
-                <th>Warehouse</th>
-                <th>Rack Location</th>
-                <th>Reorder Level</th>
-                <th>Status</th>
-                <th className="text-right">Actions</th>
+                <th className="min-w-[220px]">Product Item</th>
+                <th className="w-28">SKU Code</th>
+                <th className="w-32">Category</th>
+                <th className="w-28">Current Stock</th>
+                <th className="w-20">Unit</th>
+                <th className="w-36">Warehouse</th>
+                <th className="w-32">Rack Location</th>
+                <th className="w-28">Reorder Level</th>
+                <th className="w-28 text-center">Status</th>
+                <th className="w-32 text-right pr-6">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -657,32 +659,30 @@ export const ProductsView: React.FC = () => {
                   </div>
                   <div>
                     <label className="form-label">Category *</label>
-                    <select
+                    <CustomSelect
                       value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                      className="form-control text-xs"
-                    >
-                      {categories.map(c => (
-                        <option key={c.id} value={c.name}>{c.name}</option>
-                      ))}
-                    </select>
+                      onChange={(val) => setFormData({ ...formData, category: val })}
+                      options={categories.map(c => c.name)}
+                      size="md"
+                    />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-3">
                   <div>
                     <label className="form-label">Unit of Measure *</label>
-                    <select
+                    <CustomSelect
                       value={formData.unit}
-                      onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
-                      className="form-control text-xs"
-                    >
-                      <option value="kg">kg (Kilograms)</option>
-                      <option value="units">units (Pieces)</option>
-                      <option value="meters">meters</option>
-                      <option value="pcs">pcs (Packaging)</option>
-                      <option value="boxes">boxes</option>
-                    </select>
+                      onChange={(val) => setFormData({ ...formData, unit: val })}
+                      options={[
+                        { value: 'kg', label: 'kg (Kilograms)' },
+                        { value: 'units', label: 'units (Pieces)' },
+                        { value: 'meters', label: 'meters' },
+                        { value: 'pcs', label: 'pcs (Packaging)' },
+                        { value: 'boxes', label: 'boxes' }
+                      ]}
+                      size="md"
+                    />
                   </div>
                   <div>
                     <label className="form-label">Initial Stock Count</label>
@@ -710,27 +710,30 @@ export const ProductsView: React.FC = () => {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="form-label">Primary Warehouse *</label>
-                    <select
+                    <CustomSelect
                       value={formData.warehouseId}
-                      onChange={(e) => setFormData({ ...formData, warehouseId: e.target.value })}
-                      className="form-control text-xs"
-                    >
-                      {warehouses.map(w => (
-                        <option key={w.id} value={w.id}>{w.name}</option>
-                      ))}
-                    </select>
+                      onChange={(val) => setFormData({ ...formData, warehouseId: val })}
+                      options={warehouses.map(w => ({
+                        value: w.id,
+                        label: w.name,
+                        subLabel: `${w.city} • ${w.code}`,
+                        badge: w.code
+                      }))}
+                      size="md"
+                    />
                   </div>
                   <div>
                     <label className="form-label">Bin Location *</label>
-                    <select
+                    <CustomSelect
                       value={formData.locationId}
-                      onChange={(e) => setFormData({ ...formData, locationId: e.target.value })}
-                      className="form-control text-xs"
-                    >
-                      {locations.map(l => (
-                        <option key={l.id} value={l.id}>{l.name}</option>
-                      ))}
-                    </select>
+                      onChange={(val) => setFormData({ ...formData, locationId: val })}
+                      options={locations.map(l => ({
+                        value: l.id,
+                        label: l.name,
+                        subLabel: l.type
+                      }))}
+                      size="md"
+                    />
                   </div>
                 </div>
 
@@ -789,15 +792,12 @@ export const ProductsView: React.FC = () => {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="form-label">Category</label>
-                    <select
+                    <CustomSelect
                       value={editingProduct.category}
-                      onChange={(e) => setEditingProduct({ ...editingProduct, category: e.target.value })}
-                      className="form-control text-xs"
-                    >
-                      {categories.map(c => (
-                        <option key={c.id} value={c.name}>{c.name}</option>
-                      ))}
-                    </select>
+                      onChange={(val) => setEditingProduct({ ...editingProduct, category: val })}
+                      options={categories.map(c => c.name)}
+                      size="md"
+                    />
                   </div>
                   <div>
                     <label className="form-label">Reorder Level</label>

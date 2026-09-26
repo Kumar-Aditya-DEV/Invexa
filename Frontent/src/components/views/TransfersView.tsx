@@ -8,6 +8,7 @@ import {
   CheckCircle2,
   Info
 } from 'lucide-react';
+import { CustomSelect } from '../common/CustomSelect';
 
 export const TransfersView: React.FC = () => {
   const {
@@ -138,19 +139,19 @@ export const TransfersView: React.FC = () => {
 
       {/* Tables */}
       {activeTab === 'transfers' ? (
-        <div className="card overflow-hidden">
+        <div className="card overflow-hidden border border-slate-200 shadow-sm">
           <div className="table-responsive">
-            <table className="stock-table">
+            <table className="stock-table min-w-[1050px]">
               <thead>
                 <tr>
-                  <th>Transfer Ref ID</th>
-                  <th>Product & SKU</th>
-                  <th>Origin Facility & Rack</th>
-                  <th>Destination Facility & Rack</th>
-                  <th>Quantity Moved</th>
-                  <th>Reason / Workflow</th>
-                  <th>Date</th>
-                  <th>Status</th>
+                  <th className="w-32">Transfer Ref ID</th>
+                  <th className="min-w-[180px]">Product & SKU</th>
+                  <th className="min-w-[180px]">Origin Facility & Rack</th>
+                  <th className="min-w-[180px]">Destination Facility & Rack</th>
+                  <th className="w-28 text-center">Quantity Moved</th>
+                  <th className="min-w-[160px]">Reason / Workflow</th>
+                  <th className="w-28">Date</th>
+                  <th className="w-28 text-center pr-6">Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -163,7 +164,7 @@ export const TransfersView: React.FC = () => {
                 ) : (
                   transfers.map(t => (
                     <tr key={t.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="font-mono text-xs font-bold text-blue-600">{t.reference}</td>
+                      <td className="font-mono text-xs font-bold text-blue-600 whitespace-nowrap">{t.reference}</td>
                       <td>
                         <span className="font-bold text-xs text-slate-900">{t.productName}</span>
                         <span className="block text-[10px] text-slate-400 font-mono">{t.sku}</span>
@@ -176,12 +177,12 @@ export const TransfersView: React.FC = () => {
                         <span className="text-xs text-blue-700 font-medium">{t.toWarehouseName}</span>
                         <span className="block text-[10px] font-mono text-blue-600">{t.toLocationName}</span>
                       </td>
-                      <td>
+                      <td className="text-center whitespace-nowrap">
                         <span className="font-bold text-xs text-purple-600 font-mono">{t.quantity} {t.unit}</span>
                       </td>
                       <td className="text-xs text-slate-600">{t.reason}</td>
-                      <td className="text-xs font-mono text-slate-500">{t.date}</td>
-                      <td>
+                      <td className="text-xs font-mono text-slate-500 whitespace-nowrap">{t.date}</td>
+                      <td className="text-center pr-6 whitespace-nowrap">
                         <span className="badge badge-done">
                           <CheckCircle2 className="w-3 h-3 inline mr-0.5" /> Done
                         </span>
@@ -194,20 +195,20 @@ export const TransfersView: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div className="card overflow-hidden">
+        <div className="card overflow-hidden border border-slate-200 shadow-sm">
           <div className="table-responsive">
-            <table className="stock-table">
+            <table className="stock-table min-w-[1050px]">
               <thead>
                 <tr>
-                  <th>Adjustment Ref ID</th>
-                  <th>Product Item</th>
-                  <th>Warehouse Facility</th>
-                  <th>System Qty</th>
-                  <th>Physical Count</th>
-                  <th>Difference</th>
-                  <th>Audit Reason</th>
-                  <th>Date</th>
-                  <th>Auditor</th>
+                  <th className="w-32">Adjustment Ref ID</th>
+                  <th className="min-w-[180px]">Product Item</th>
+                  <th className="w-36">Warehouse Facility</th>
+                  <th className="w-28 text-right">System Qty</th>
+                  <th className="w-28 text-right">Physical Count</th>
+                  <th className="w-28 text-center">Difference</th>
+                  <th className="min-w-[160px]">Audit Reason</th>
+                  <th className="w-28">Date</th>
+                  <th className="w-28 pr-6">Auditor</th>
                 </tr>
               </thead>
               <tbody>
@@ -266,68 +267,76 @@ export const TransfersView: React.FC = () => {
               <div className="p-6 space-y-4">
                 <div>
                   <label className="form-label">Select Product *</label>
-                  <select
+                  <CustomSelect
                     value={trfForm.productId}
-                    onChange={(e) => setTrfForm({ ...trfForm, productId: e.target.value })}
-                    className="form-control text-xs"
-                  >
-                    {products.map(p => (
-                      <option key={p.id} value={p.id}>{p.name} (Stock: ${p.stock} {p.unit} in {p.warehouseName})</option>
-                    ))}
-                  </select>
+                    onChange={(val) => setTrfForm({ ...trfForm, productId: val })}
+                    options={products.map(p => ({
+                      value: p.id,
+                      label: p.name,
+                      subLabel: `Stock: ${p.stock} ${p.unit} in ${p.warehouseName}`,
+                      badge: `${p.stock} ${p.unit}`
+                    }))}
+                    size="md"
+                  />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="form-label">From Warehouse</label>
-                    <select
+                    <CustomSelect
                       value={trfForm.fromWarehouseId}
-                      onChange={(e) => setTrfForm({ ...trfForm, fromWarehouseId: e.target.value })}
-                      className="form-control text-xs"
-                    >
-                      {warehouses.map(w => (
-                        <option key={w.id} value={w.id}>{w.name}</option>
-                      ))}
-                    </select>
+                      onChange={(val) => setTrfForm({ ...trfForm, fromWarehouseId: val })}
+                      options={warehouses.map(w => ({
+                        value: w.id,
+                        label: w.name,
+                        subLabel: `${w.city} • ${w.code}`,
+                        badge: w.code
+                      }))}
+                      size="md"
+                    />
                   </div>
                   <div>
                     <label className="form-label">From Rack</label>
-                    <select
+                    <CustomSelect
                       value={trfForm.fromLocationId}
-                      onChange={(e) => setTrfForm({ ...trfForm, fromLocationId: e.target.value })}
-                      className="form-control text-xs"
-                    >
-                      {locations.map(l => (
-                        <option key={l.id} value={l.id}>{l.name}</option>
-                      ))}
-                    </select>
+                      onChange={(val) => setTrfForm({ ...trfForm, fromLocationId: val })}
+                      options={locations.map(l => ({
+                        value: l.id,
+                        label: l.name,
+                        subLabel: l.type
+                      }))}
+                      size="md"
+                    />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="form-label">To Warehouse *</label>
-                    <select
+                    <CustomSelect
                       value={trfForm.toWarehouseId}
-                      onChange={(e) => setTrfForm({ ...trfForm, toWarehouseId: e.target.value })}
-                      className="form-control text-xs"
-                    >
-                      {warehouses.map(w => (
-                        <option key={w.id} value={w.id}>{w.name}</option>
-                      ))}
-                    </select>
+                      onChange={(val) => setTrfForm({ ...trfForm, toWarehouseId: val })}
+                      options={warehouses.map(w => ({
+                        value: w.id,
+                        label: w.name,
+                        subLabel: `${w.city} • ${w.code}`,
+                        badge: w.code
+                      }))}
+                      size="md"
+                    />
                   </div>
                   <div>
                     <label className="form-label">To Rack *</label>
-                    <select
+                    <CustomSelect
                       value={trfForm.toLocationId}
-                      onChange={(e) => setTrfForm({ ...trfForm, toLocationId: e.target.value })}
-                      className="form-control text-xs"
-                    >
-                      {locations.map(l => (
-                        <option key={l.id} value={l.id}>{l.name}</option>
-                      ))}
-                    </select>
+                      onChange={(val) => setTrfForm({ ...trfForm, toLocationId: val })}
+                      options={locations.map(l => ({
+                        value: l.id,
+                        label: l.name,
+                        subLabel: l.type
+                      }))}
+                      size="md"
+                    />
                   </div>
                 </div>
 
@@ -345,16 +354,17 @@ export const TransfersView: React.FC = () => {
                   </div>
                   <div>
                     <label className="form-label">Transfer Purpose</label>
-                    <select
+                    <CustomSelect
                       value={trfForm.reason}
-                      onChange={(e) => setTrfForm({ ...trfForm, reason: e.target.value })}
-                      className="form-control text-xs"
-                    >
-                      <option>Shop floor manufacturing production allocation</option>
-                      <option>Cross-Dock Warehouse Rebalancing</option>
-                      <option>Damaged Goods Quarantine</option>
-                      <option>Packaging Staging</option>
-                    </select>
+                      onChange={(val) => setTrfForm({ ...trfForm, reason: val })}
+                      options={[
+                        'Shop floor manufacturing production allocation',
+                        'Cross-Dock Warehouse Rebalancing',
+                        'Damaged Goods Quarantine',
+                        'Packaging Staging'
+                      ]}
+                      size="md"
+                    />
                   </div>
                 </div>
               </div>
@@ -389,22 +399,24 @@ export const TransfersView: React.FC = () => {
               <div className="p-6 space-y-4">
                 <div>
                   <label className="form-label">Product Under Audit *</label>
-                  <select
+                  <CustomSelect
                     value={adjForm.productId}
-                    onChange={(e) => {
-                      const p = products.find(prod => prod.id === e.target.value);
+                    onChange={(val) => {
+                      const p = products.find(prod => prod.id === val);
                       setAdjForm({
                         ...adjForm,
-                        productId: e.target.value,
+                        productId: val,
                         physicalCount: p ? p.stock : 0
                       });
                     }}
-                    className="form-control text-xs"
-                  >
-                    {products.map(p => (
-                      <option key={p.id} value={p.id}>{p.name} ({p.sku})</option>
-                    ))}
-                  </select>
+                    options={products.map(p => ({
+                      value: p.id,
+                      label: p.name,
+                      subLabel: `SKU: ${p.sku} | ${p.category}`,
+                      badge: `${p.stock} ${p.unit} in Stock`
+                    }))}
+                    size="md"
+                  />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
@@ -439,17 +451,18 @@ export const TransfersView: React.FC = () => {
 
                 <div>
                   <label className="form-label">Audit Discrepancy Reason *</label>
-                  <select
+                  <CustomSelect
                     value={adjForm.reason}
-                    onChange={(e) => setAdjForm({ ...adjForm, reason: e.target.value })}
-                    className="form-control text-xs"
-                  >
-                    <option>Damaged in storage / material handling</option>
-                    <option>Lost / Missing inventory</option>
-                    <option>Found extra stock</option>
-                    <option>Counting Error / Typo correction</option>
-                    <option>Expired or Scrapped</option>
-                  </select>
+                    onChange={(val) => setAdjForm({ ...adjForm, reason: val })}
+                    options={[
+                      'Damaged in storage / material handling',
+                      'Lost / Missing inventory',
+                      'Found extra stock',
+                      'Counting Error / Typo correction',
+                      'Expired or Scrapped'
+                    ]}
+                    size="md"
+                  />
                 </div>
               </div>
 

@@ -4,6 +4,7 @@ import { Sidebar } from './components/layout/Sidebar';
 import { Navbar } from './components/layout/Navbar';
 import { CommandPalette } from './components/layout/CommandPalette';
 import { ToastContainer } from './components/layout/ToastContainer';
+import { InvexaAICopilot } from './components/chat/InvexaAICopilot';
 
 // Views
 import { DashboardView } from './components/views/DashboardView';
@@ -95,13 +96,16 @@ const MainLayout: React.FC = () => {
         <Navbar onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)} />
 
         {/* Dynamic Module Workspace */}
-        <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl w-full mx-auto pb-16">
+        <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-[1600px] w-full mx-auto pb-16">
           {renderActiveView()}
         </main>
       </div>
 
       {/* Global Command Spotlight Palette (⌘K / Ctrl+K) */}
       <CommandPalette />
+
+      {/* Intelligent INVEXA AI Copilot Chatbot */}
+      <InvexaAICopilot />
 
       {/* Semantic Notification Toasts */}
       <ToastContainer />

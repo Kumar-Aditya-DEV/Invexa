@@ -67,8 +67,27 @@ Build the local dev environment (docker-compose or equivalent) around a Mongo **
 ### 3.3 Warehouses & Locations
 - Fixed hierarchy: **Warehouse → Rack** (not configurable in v1).
 - Stock tracked per `(product, warehouse, location)`.
+- Compound index on `Location`: `{ warehouseId: 1, name: 1 }`.
+- Soft-delete only (`active: false`) on both `Warehouse` and `Location`. Deletion of warehouse/location blocked if non-zero stock quants exist.
 
-### 3.4 Quants (Materialized Balances — Read Path)
+### 3.4 Bootstrap Sentinel (`_meta` Collection)
+```json
+{
+  "_id": "bootstrap",
+  "used": "boolean",
+  "usedAt": "Date | null"
+}
+```
+- Atomic singleton record used for first-admin provisioning (`POST /api/setup/first-admin`).
+
+### 3.5 Deliberately Absent Fields & Architecture (Segment A §9)
+- **`reorderQuantity` on Product**: Deliberately absent; no automated reordering exists in v1 (PRD §5.2, §7, §8), so no consumer exists for this field. Only `reorderPoint` is kept for the low-stock KPI.
+- **Category collection**: Deliberately absent; category is stored as a free-text field on `Product` to eliminate relational overhead in v1 (PRD §5.2, §8).
+- **Configurable location depth**: Deliberately absent; fixed strictly at Warehouse → Rack. Arbitrary or recursive trees are out of scope (PRD §5.9, §8, §10).
+- **`assignedWarehouses` in JWT**: Deliberately absent from token; read live from the DB on every write request so permission changes take effect immediately without token expiration delay (PRD §5.1, §5.9).
+- **Self-serve signup / forgot password**: Deliberately absent; all users are created by a Manager with temporary passwords (PRD §5.1, §8).
+
+### 3.6 Quants (Materialized Balances — Read Path)
 ```json
 {
   "productId": "ObjectId",
@@ -79,9 +98,9 @@ Build the local dev environment (docker-compose or equivalent) around a Mongo **
 ```
 - Unique index: `(productId, warehouseId, locationId)`.
 - This is what the app reads for dashboards/stock lookups.
-- Updated **in the same transaction** as every ledger write (§3.5, §5).
+- Updated **in the same transaction** as every ledger write (§3.7, §5).
 
-### 3.5 Stock Ledger (Source of Truth)
+### 3.7 Stock Ledger (Source of Truth)
 ```json
 {
   "documentId": "ObjectId",
@@ -369,13 +388,13 @@ Representative codes —
 ### Full Route List
 ```text
 Auth
-POST   /api/auth/login
-POST   /api/auth/logout
-GET    /api/auth/me                → allowed even mid mustChangePassword
-PUT    /api/auth/change-password
+POST   /api/auth/login             → rate-limited via express-rate-limit (10 requests per 15 minutes window, returns 429 RATE_LIMITED); rejects disabled users (active === false) with 403; issues stateless JWT containing { userId, role } only
+POST   /api/auth/logout            → client-side token discard (no server blocklist); allowed mid mustChangePassword
+GET    /api/auth/me                → returns current user profile; allowed mid mustChangePassword
+PUT    /api/auth/change-password   → updates password and clears mustChangePassword flag
 
-Bootstrap (atomic first-user check)
-POST   /api/setup/first-admin
+Bootstrap (atomic first-user check, PRD §5.1)
+POST   /api/setup/first-admin      → atomic first-user creation using findOneAndUpdate + upsert against _meta sentinel; permanently inert (409 ALREADY_BOOTSTRAPPED) after first success
 
 Users [Manager only]
 GET    /api/users

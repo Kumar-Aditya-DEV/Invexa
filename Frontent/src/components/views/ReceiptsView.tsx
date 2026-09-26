@@ -16,6 +16,7 @@ import {
   Trash2,
   ArrowRight
 } from 'lucide-react';
+import { CustomSelect } from '../common/CustomSelect';
 
 export const ReceiptsView: React.FC = () => {
   const {
@@ -363,38 +364,39 @@ export const ReceiptsView: React.FC = () => {
             />
           </div>
 
-          <div className="flex items-center gap-2">
-            <select
+          <div className="flex items-center gap-2 min-w-[180px]">
+            <CustomSelect
               value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="form-control text-xs w-auto"
-            >
-              <option value="All">All Statuses</option>
-              <option value="Draft">Draft</option>
-              <option value="Waiting">Waiting (Blocked)</option>
-              <option value="Ready">Ready at Dock</option>
-              <option value="Done">Done (Validated)</option>
-            </select>
+              onChange={(val) => setFilterStatus(val)}
+              options={[
+                { value: 'All', label: 'All Statuses' },
+                { value: 'Draft', label: 'Draft', badge: 'Draft', badgeColor: 'bg-slate-100 text-slate-700' },
+                { value: 'Waiting', label: 'Waiting (Blocked)', badge: 'Waiting', badgeColor: 'bg-amber-100 text-amber-700' },
+                { value: 'Ready', label: 'Ready at Dock', badge: 'Ready', badgeColor: 'bg-emerald-100 text-emerald-700' },
+                { value: 'Done', label: 'Done (Validated)', badge: 'Done', badgeColor: 'bg-blue-100 text-blue-700' }
+              ]}
+              size="sm"
+            />
           </div>
         </div>
       </div>
 
       {/* View Rendering (List or Kanban) */}
       {viewMode === 'list' ? (
-        <div className="card overflow-hidden">
+        <div className="card overflow-hidden border border-slate-200 shadow-sm">
           <div className="table-responsive">
-            <table className="stock-table">
+            <table className="stock-table min-w-[1050px]">
               <thead>
                 <tr>
-                  <th>Receipt Ref ID</th>
-                  <th>Supplier / Vendor</th>
-                  <th>Line Items</th>
-                  <th>Total Expected Qty</th>
-                  <th>Destination Facility</th>
-                  <th>Scheduled Date</th>
-                  <th>Operator</th>
-                  <th>Status</th>
-                  <th className="text-right">Actions</th>
+                  <th className="w-32">Receipt Ref ID</th>
+                  <th className="min-w-[160px]">Supplier / Vendor</th>
+                  <th className="min-w-[200px]">Line Items</th>
+                  <th className="w-28 text-center">Expected Qty</th>
+                  <th className="w-36">Destination WH</th>
+                  <th className="w-32">Scheduled Date</th>
+                  <th className="w-28">Operator</th>
+                  <th className="w-28 text-center">Status</th>
+                  <th className="w-36 text-right pr-6">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -408,8 +410,8 @@ export const ReceiptsView: React.FC = () => {
                   filteredReceipts.map(r => {
                     const totalQty = r.items.reduce((sum, i) => sum + Number(i.expectedQty), 0);
                     return (
-                      <tr key={r.id} className="hover:bg-slate-50 transition-colors">
-                        <td>
+                      <tr key={r.id} className="hover:bg-slate-50/80 transition-colors">
+                        <td className="whitespace-nowrap">
                           <button
                             onClick={() => setSelectedReceiptId(r.id)}
                             className="font-mono text-xs font-bold text-blue-600 hover:underline"
@@ -418,24 +420,24 @@ export const ReceiptsView: React.FC = () => {
                           </button>
                         </td>
                         <td>
-                          <span className="font-bold text-xs text-slate-900">{r.supplier}</span>
+                          <span className="font-bold text-xs text-slate-900 block">{r.supplier}</span>
                         </td>
                         <td>
-                          <span className="text-xs text-slate-700">{r.items.map(i => i.productName).join(', ')}</span>
-                          <span className="block text-[10px] text-slate-400 font-mono">{r.items.length} line(s)</span>
+                          <span className="text-xs text-slate-700 block line-clamp-1">{r.items.map(i => i.productName).join(', ')}</span>
+                          <span className="text-[10px] text-slate-400 font-mono block">{r.items.length} line(s)</span>
                         </td>
-                        <td>
+                        <td className="text-center whitespace-nowrap">
                           <span className="font-bold text-xs text-slate-900">{totalQty} units</span>
                         </td>
-                        <td className="text-xs text-slate-700 font-medium">{r.warehouseName}</td>
-                        <td className="text-xs text-slate-600 font-mono">
+                        <td className="text-xs text-slate-700 font-medium whitespace-nowrap">{r.warehouseName}</td>
+                        <td className="text-xs text-slate-600 font-mono whitespace-nowrap">
                           {r.scheduledDate}
-                          {r.isLate && (
+                          {r.isLate && r.status !== 'Done' && (
                             <span className="ml-1 text-[10px] text-red-600 font-bold bg-red-50 px-1.5 py-0.2 rounded">Late</span>
                           )}
                         </td>
-                        <td className="text-xs text-slate-500">{r.responsible}</td>
-                        <td>
+                        <td className="text-xs text-slate-500 whitespace-nowrap">{r.responsible}</td>
+                        <td className="text-center whitespace-nowrap">
                           <span className={`badge ${
                             r.status === 'Done' ? 'badge-done' :
                             r.status === 'Ready' ? 'badge-ready' :
@@ -444,18 +446,18 @@ export const ReceiptsView: React.FC = () => {
                             {r.status}
                           </span>
                         </td>
-                        <td className="text-right">
-                          <div className="flex items-center justify-end gap-1">
+                        <td className="text-right pr-6 whitespace-nowrap">
+                          <div className="flex items-center justify-end gap-1.5">
                             <button
                               onClick={() => setSelectedReceiptId(r.id)}
-                              className="btn btn-subtle btn-sm text-xs"
+                              className="btn btn-secondary btn-sm text-xs px-2.5 py-1"
                             >
                               Details
                             </button>
                             {r.status !== 'Done' && (
                               <button
                                 onClick={() => validateReceipt(r.id)}
-                                className="btn btn-success btn-sm text-xs"
+                                className="btn btn-success btn-sm text-xs px-2.5 py-1"
                               >
                                 Validate
                               </button>
@@ -493,7 +495,7 @@ export const ReceiptsView: React.FC = () => {
                     >
                       <div className="flex items-center justify-between mb-2">
                         <span className="font-mono text-xs font-bold text-blue-600">{r.reference}</span>
-                        {r.isLate && (
+                        {r.isLate && r.status !== 'Done' && (
                           <span className="px-1.5 py-0.2 bg-red-100 text-red-700 text-[10px] font-bold rounded">Late</span>
                         )}
                       </div>
@@ -570,15 +572,17 @@ export const ReceiptsView: React.FC = () => {
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="form-label">Destination Facility *</label>
-                      <select
+                      <CustomSelect
                         value={wizardData.warehouseId}
-                        onChange={(e) => setWizardData({ ...wizardData, warehouseId: e.target.value })}
-                        className="form-control text-xs"
-                      >
-                        {warehouses.map(w => (
-                          <option key={w.id} value={w.id}>{w.name}</option>
-                        ))}
-                      </select>
+                        onChange={(val) => setWizardData({ ...wizardData, warehouseId: val })}
+                        options={warehouses.map(w => ({
+                          value: w.id,
+                          label: w.name,
+                          subLabel: `${w.city} • ${w.code}`,
+                          badge: w.code
+                        }))}
+                        size="md"
+                      />
                     </div>
                     <div>
                       <label className="form-label">Scheduled Date *</label>
@@ -618,15 +622,17 @@ export const ReceiptsView: React.FC = () => {
                       <div key={idx} className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
                         <div className="md:col-span-2">
                           <label className="form-label text-[11px]">Product</label>
-                          <select
+                          <CustomSelect
                             value={item.productId}
-                            onChange={(e) => handleUpdateWizardItem(idx, e.target.value)}
-                            className="form-control text-xs"
-                          >
-                            {products.map(p => (
-                              <option key={p.id} value={p.id}>{p.name} ({p.sku})</option>
-                            ))}
-                          </select>
+                            onChange={(val) => handleUpdateWizardItem(idx, val)}
+                            options={products.map(p => ({
+                              value: p.id,
+                              label: p.name,
+                              subLabel: `SKU: ${p.sku} | ${p.category}`,
+                              badge: `${p.unit}`
+                            }))}
+                            size="sm"
+                          />
                         </div>
                         <div>
                           <label className="form-label text-[11px]">Qty Received ({item.unit})</label>
