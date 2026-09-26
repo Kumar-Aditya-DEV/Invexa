@@ -16,7 +16,8 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-  X
+  X,
+  Globe
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -48,6 +49,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {
       section: 'Overview',
       items: [
+        { id: 'landing', label: 'Landing Page', icon: Globe },
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
         {
           id: 'inbox',
@@ -63,8 +65,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       items: [
         { id: 'products', label: 'Products Master', icon: Package, badge: kpis.totalProducts },
         { id: 'stock', label: 'Stock Matrix', icon: Layers },
-        { id: 'categories', label: 'Categories', icon: Tags },
-        { id: 'rules', label: 'Reordering Rules', icon: Sliders }
+        { id: 'categories', label: 'Categories', icon: Tags }
       ]
     },
     {

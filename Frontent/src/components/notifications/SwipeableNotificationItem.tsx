@@ -177,24 +177,32 @@ export const SwipeableNotificationItem: React.FC<SwipeableNotificationItemProps>
   }
 
   return (
-    <div className="relative overflow-hidden group select-none rounded-xl">
-      {/* Background Revealed Actions on Swipe Left */}
-      <div className="absolute inset-y-0 right-0 w-[85px] bg-rose-600 flex items-center justify-center z-0 rounded-r-xl">
+    <div className="relative overflow-hidden group select-none rounded-xl bg-slate-100">
+      {/* Background Revealed Actions on Swipe Left (Only visible when user swipes left) */}
+      <div
+        style={{
+          opacity: offsetX < -5 ? 1 : 0,
+          pointerEvents: offsetX < -20 ? 'auto' : 'none',
+          transition: isDragging ? 'none' : 'opacity 0.2s ease'
+        }}
+        className="absolute inset-y-0 right-0 w-[85px] bg-rose-600 flex items-center justify-center z-0 rounded-r-xl"
+      >
         <button
           onClick={triggerDelete}
           className="w-full h-full flex flex-col items-center justify-center text-white hover:bg-rose-700 active:bg-rose-800 transition-colors gap-1 px-2 cursor-pointer"
           title="Delete Notification"
         >
-          <Trash2 className="w-4 h-4 animate-pulse" />
+          <Trash2 className="w-4 h-4" />
           <span className="text-[10px] font-bold uppercase tracking-wider">Delete</span>
         </button>
       </div>
 
-      {/* Foreground Swipeable Card */}
+      {/* Foreground Swipeable Card - 100% Solid Opaque Background */}
       <div
         style={{
           transform: `translateX(${offsetX}px)`,
-          transition: isDragging ? 'none' : 'transform 0.22s cubic-bezier(0.16, 1, 0.3, 1)'
+          transition: isDragging ? 'none' : 'transform 0.22s cubic-bezier(0.16, 1, 0.3, 1)',
+          backgroundColor: notification.read ? '#FAFAFA' : '#FFFFFF'
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -210,9 +218,9 @@ export const SwipeableNotificationItem: React.FC<SwipeableNotificationItemProps>
             onClick();
           }
         }}
-        className={`relative z-10 bg-white hover:bg-slate-50/90 transition-colors border-b border-slate-100 flex items-start gap-3 cursor-pointer ${
+        className={`relative z-10 hover:bg-slate-50 transition-colors border-b border-slate-100 flex items-start gap-3 cursor-pointer ${
           compact ? 'p-3' : 'p-4'
-        } ${notification.read ? 'opacity-75 bg-slate-50/40' : 'bg-blue-50/15'}`}
+        }`}
       >
         {/* Severity Icon Badge */}
         <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 shadow-2xs ${styles.iconBg}`}>
@@ -224,7 +232,7 @@ export const SwipeableNotificationItem: React.FC<SwipeableNotificationItemProps>
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5 min-w-0">
               {!notification.read && (
-                <span className="w-2 h-2 rounded-full bg-blue-600 shrink-0" />
+                <span className="w-2 h-2 rounded-full bg-blue-600 shrink-0 shadow-2xs" />
               )}
               <h4 className={`text-xs truncate font-bold ${notification.read ? 'text-slate-700' : 'text-slate-900'}`}>
                 {notification.title}
@@ -292,7 +300,7 @@ export const SwipeableNotificationItem: React.FC<SwipeableNotificationItemProps>
 
         {/* Swipe Left Hint indicator on right edge */}
         <div className="hidden sm:flex flex-col items-center justify-center text-slate-300 group-hover:text-slate-400 pl-1 shrink-0 self-center">
-          <ChevronLeft className="w-3.5 h-3.5 animate-pulse" />
+          <ChevronLeft className="w-3.5 h-3.5" />
         </div>
       </div>
     </div>
