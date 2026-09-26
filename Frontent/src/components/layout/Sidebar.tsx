@@ -49,10 +49,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {
       section: 'Overview',
       items: [
-
         { id: 'landing', label: 'Landing Page', icon: Globe },
-        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard }
-
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
         {
           id: 'inbox',
@@ -61,7 +58,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
           badge: unreadNotifs > 0 ? `${unreadNotifs}` : undefined,
           badgeColor: 'bg-rose-100 text-rose-700 font-bold'
         }
-
       ]
     },
     {
