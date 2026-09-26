@@ -18,6 +18,7 @@ import { HistoryLedgerView } from './components/views/HistoryLedgerView';
 import { CategoriesRulesView } from './components/views/CategoriesRulesView';
 import { ProfileView } from './components/views/ProfileView';
 import { AuthView } from './components/views/AuthView';
+import { InboxView } from './components/views/InboxView';
 
 const MainLayout: React.FC = () => {
   const { activeView } = useStockSense();
@@ -28,6 +29,8 @@ const MainLayout: React.FC = () => {
     switch (activeView) {
       case 'dashboard':
         return <DashboardView />;
+      case 'inbox':
+        return <InboxView />;
       case 'products':
         return <ProductsView />;
       case 'stock':

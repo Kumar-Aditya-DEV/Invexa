@@ -2,6 +2,7 @@ import React from 'react';
 import { useStockSense } from '../../context/StockSenseContext';
 import {
   LayoutDashboard,
+  Inbox,
   Package,
   Layers,
   Sliders,
@@ -39,14 +40,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const mobileOpen = externalMobileOpen !== undefined ? externalMobileOpen : internalMobileOpen;
   const setMobileOpen = externalSetMobileOpen || setInternalMobileOpen;
 
-  const { activeView, setActiveView, getKPIs, currentUser, logout } = useStockSense();
+  const { activeView, setActiveView, getKPIs, currentUser, logout, notifications } = useStockSense();
   const kpis = getKPIs();
+  const unreadNotifs = notifications.filter(n => !n.read).length;
 
   const navItems = [
     {
       section: 'Overview',
       items: [
-        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard }
+        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+        {
+          id: 'inbox',
+          label: 'Inbox & Alerts',
+          icon: Inbox,
+          badge: unreadNotifs > 0 ? `${unreadNotifs}` : undefined,
+          badgeColor: 'bg-rose-100 text-rose-700 font-bold'
+        }
       ]
     },
     {
