@@ -93,6 +93,7 @@ interface StockSenseContextType {
   markAllNotificationsRead: () => void;
   login: (loginId: string, role?: string) => void;
   registerUser: (data: { fullName: string; loginId: string; email: string }) => void;
+  updateUserProfile: (updates: Partial<UserProfile>) => void;
   logout: () => void;
   resetAllData: () => void;
 }
@@ -1335,6 +1336,15 @@ export const StockSenseProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     showToast(`Welcome to StockSense, ${user.fullName}!`, 'success');
   };
 
+  const updateUserProfile = (updates: Partial<UserProfile>) => {
+    setCurrentUser(prev => {
+      const updated = { ...prev, ...updates };
+      localStorage.setItem(USER_KEY, JSON.stringify(updated));
+      return updated;
+    });
+    showToast('User profile updated successfully!', 'success');
+  };
+
   const logout = () => {
     setActiveView('auth');
     showToast('Signed out of session.', 'info');
@@ -1401,6 +1411,7 @@ export const StockSenseProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         markAllNotificationsRead,
         login,
         registerUser,
+        updateUserProfile,
         logout,
         resetAllData
       }}
