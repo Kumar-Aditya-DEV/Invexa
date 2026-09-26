@@ -15,7 +15,8 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-  X
+  X,
+  Globe
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -46,6 +47,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {
       section: 'Overview',
       items: [
+        { id: 'landing', label: 'Landing Page', icon: Globe },
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard }
       ]
     },

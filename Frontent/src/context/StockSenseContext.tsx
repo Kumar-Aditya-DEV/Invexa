@@ -591,7 +591,7 @@ export const StockSenseProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return DEFAULT_USER;
   });
 
-  const [activeView, setActiveView] = useState<string>('dashboard');
+  const [activeView, setActiveView] = useState<string>('landing');
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
   const [selectedReceiptId, setSelectedReceiptId] = useState<string | null>(null);
   const [selectedDeliveryId, setSelectedDeliveryId] = useState<string | null>(null);
